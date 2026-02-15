@@ -21,8 +21,8 @@ public class Function
 
         var response = new Dictionary<string, string>
         {
-            ["status"] = "SUCCEEDED",
-            ["message"] = "Mock response from bootstrap"
+            ["status"] = "SUCCEExxDED !!!",
+            ["message"] = "Teste realizado com sucessoMock xxx from bootstrap"
         };
 
         var result = JsonDocument.Parse(JsonSerializer.SerializeToUtf8Bytes(response));

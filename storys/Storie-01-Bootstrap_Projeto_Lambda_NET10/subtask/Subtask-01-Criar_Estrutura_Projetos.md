@@ -31,8 +31,8 @@ Criar a solution .NET com estrutura de projetos seguindo Clean Architecture (Dom
 3. **Verificação de SDK:** `dotnet --version` na raiz deve retornar 10.0.x conforme `global.json`
 
 ## Critérios de Aceite da Subtask
-- [ ] Solution com 6 projetos criados e adicionados
-- [ ] `global.json` presente e funcional (força .NET 10)
-- [ ] Referências entre projetos configuradas corretamente (Application não referencia Infra; Lambda não referencia Domain diretamente)
-- [ ] `dotnet build` na raiz compila todos os projetos com sucesso
-- [ ] Estrutura de pastas: `src/` e `tests/` na raiz
+- [x] Solution com 6 projetos criados e adicionados
+- [x] `global.json` presente e funcional (força .NET 10)
+- [x] Referências entre projetos configuradas corretamente (Application não referencia Infra; Lambda não referencia Domain diretamente)
+- [x] `dotnet build` na raiz compila todos os projetos com sucesso
+- [x] Estrutura de pastas: `src/` e `tests/` na raiz

@@ -43,9 +43,9 @@ Configurar projetos de testes unitários (xUnit) e BDD (SpecFlow + xUnit), insta
 3. **Cobertura:** `dotnet test --collect:"XPlat Code Coverage"` gera relatório (mesmo que mínimo)
 
 ## Critérios de Aceite da Subtask
-- [ ] Projeto `Tests.Unit` configurado com xUnit, FluentAssertions, Moq e coverlet
-- [ ] Projeto `Tests.Bdd` configurado com SpecFlow.xUnit
-- [ ] Estrutura de pastas criada em ambos os projetos
-- [ ] Smoke test unitário passa: `dotnet test tests/VideoProcessor.Tests.Unit` retorna sucesso
-- [ ] Smoke feature BDD passa: `dotnet test tests/VideoProcessor.Tests.Bdd` retorna sucesso
-- [ ] `dotnet test` na raiz executa todos os testes (Unit + BDD) e reporta sucesso
+- [x] Projeto `Tests.Unit` configurado com xUnit, FluentAssertions, Moq e coverlet
+- [x] Projeto `Tests.Bdd` configurado com SpecFlow.xUnit
+- [x] Estrutura de pastas criada em ambos os projetos
+- [x] Smoke test unitário passa: `dotnet test tests/VideoProcessor.Tests.Unit` retorna sucesso
+- [x] Smoke feature BDD passa: `dotnet test tests/VideoProcessor.Tests.Bdd` retorna sucesso
+- [x] `dotnet test` na raiz executa todos os testes (Unit + BDD) e reporta sucesso

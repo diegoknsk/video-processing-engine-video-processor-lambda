@@ -56,6 +56,6 @@ Criar workflow GitHub Actions que builda, testa, empacota ZIP e atualiza funçã
 - [ ] Pipeline roda em menos de 5 minutos (sanity check de performance)
 
 ## Rastreamento (dev tracking)
-- **Início:** —
+- **Início:** 14/02/2026, às 21:24 (Brasília)
 - **Fim:** —
 - **Tempo total de desenvolvimento:** —

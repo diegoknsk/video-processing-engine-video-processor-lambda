@@ -1,0 +1,17 @@
+{
+  "contractVersion": "1.0",
+  "videoId": "test-video-123",
+  "chunk": {
+    "chunkId": "chunk-0",
+    "startSec": 0.0,
+    "endSec": 10.0
+  },
+  "source": {
+    "bucket": "video-processing-input",
+    "key": "videos/test-video.mp4"
+  },
+  "output": {
+    "manifestBucket": "video-processing-output",
+    "manifestPrefix": "manifests/test-video-123"
+  }
+}

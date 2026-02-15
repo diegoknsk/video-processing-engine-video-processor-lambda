@@ -32,9 +32,9 @@ Criar handler Lambda (`Function.cs`) com método `FunctionHandler` puro (sem Add
 3. **Smoke test:** handler retorna JSON válido com estrutura esperada
 
 ## Critérios de Aceite da Subtask
-- [ ] `Function.cs` implementado com construtor padrão e DI configurado
-- [ ] Atributo `[assembly: LambdaSerializer]` configurado para System.Text.Json
-- [ ] Método `FunctionHandler` recebe `JsonDocument` e retorna `Task<JsonDocument>`
-- [ ] Resposta mockada retorna JSON válido com campo `status: "SUCCEEDED"`
-- [ ] `ConfigureServices()` prepara ServiceProvider (pode estar vazio neste momento)
-- [ ] Projeto compila sem warnings relacionados a Lambda runtime
+- [x] `Function.cs` implementado com construtor padrão e DI configurado
+- [x] Atributo `[assembly: LambdaSerializer]` configurado para System.Text.Json
+- [x] Método `FunctionHandler` recebe `JsonDocument` e retorna `Task<JsonDocument>`
+- [x] Resposta mockada retorna JSON válido com campo `status: "SUCCEEDED"`
+- [x] `ConfigureServices()` prepara ServiceProvider (pode estar vazio neste momento)
+- [x] Projeto compila sem warnings relacionados a Lambda runtime

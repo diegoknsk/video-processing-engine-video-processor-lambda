@@ -36,8 +36,8 @@ Configurar empacotamento do Lambda em formato ZIP (via `dotnet lambda package` o
 3. **Teste de .gitignore:** criar arquivo em `bin/` ou `obj/`, verificar que `git status` não o lista
 
 ## Critérios de Aceite da Subtask
-- [ ] Comando `dotnet lambda package` (ou alternativa) gera ZIP funcional
-- [ ] ZIP contém `VideoProcessor.Lambda.dll` e todas as dependências
-- [ ] `.gitignore` configurado com padrões .NET (bin, obj, artifacts, etc.)
-- [ ] README.md documenta: build, testes, empacotamento, estrutura de pastas
-- [ ] Arquivo ZIP gerado tem tamanho < 50 MB (sanity check; sem dependências desnecessárias)
+- [x] Comando `dotnet lambda package` (ou alternativa) gera ZIP funcional
+- [x] ZIP contém `VideoProcessor.Lambda.dll` e todas as dependências
+- [x] `.gitignore` configurado com padrões .NET (bin, obj, artifacts, etc.)
+- [x] README.md documenta: build, testes, empacotamento, estrutura de pastas
+- [x] Arquivo ZIP gerado tem tamanho < 50 MB (sanity check; sem dependências desnecessárias)
