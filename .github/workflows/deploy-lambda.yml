@@ -69,13 +69,18 @@ jobs:
             --function-name "${{ env.LAMBDA_FUNCTION_NAME }}" \
             --zip-file fileb://artifacts/VideoProcessor.zip
 
+      - name: Wait for code update
+        run: |
+          aws lambda wait function-updated \
+            --function-name "${{ env.LAMBDA_FUNCTION_NAME }}"
+
       - name: Set Lambda handler
         run: |
           aws lambda update-function-configuration \
             --function-name "${{ env.LAMBDA_FUNCTION_NAME }}" \
             --handler "VideoProcessor.Lambda::VideoProcessor.Lambda.Function::FunctionHandler"
 
-      - name: Wait for Lambda update
+      - name: Wait for configuration update
         run: |
           aws lambda wait function-updated \
             --function-name "${{ env.LAMBDA_FUNCTION_NAME }}"
