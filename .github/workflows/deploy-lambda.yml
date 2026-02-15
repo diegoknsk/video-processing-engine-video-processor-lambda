@@ -2,7 +2,8 @@ name: Deploy Lambda
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -28,6 +29,8 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
+    env:
+      LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME || 'video-processor-chunk-worker' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,13 +66,13 @@ jobs:
       - name: Update Lambda function
         run: |
           aws lambda update-function-code \
-            --function-name video-processor-chunk-worker \
+            --function-name "${{ env.LAMBDA_FUNCTION_NAME }}" \
             --zip-file fileb://artifacts/VideoProcessor.zip
 
       - name: Wait for Lambda update
         run: |
           aws lambda wait function-updated \
-            --function-name video-processor-chunk-worker
+            --function-name "${{ env.LAMBDA_FUNCTION_NAME }}"
           echo "Lambda function updated successfully"
 
       - name: Upload Lambda package
