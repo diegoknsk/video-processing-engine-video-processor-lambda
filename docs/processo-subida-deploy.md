@@ -42,7 +42,7 @@ Configurar em: **Settings** → **Secrets and variables** → **Actions** → **
 
 ### Handler da função Lambda
 
-O Handler deve ser configurado na criação da função (IaC ou Console):
+O deploy define o handler automaticamente; não é necessário configurar manualmente. Valor aplicado a cada deploy:
 
 ```
 VideoProcessor.Lambda::VideoProcessor.Lambda.Function::FunctionHandler
@@ -72,6 +72,7 @@ O IAM User ou Role das credenciais precisa das seguintes permissões:
 | Permissão | Uso |
 |-----------|-----|
 | `lambda:UpdateFunctionCode` | Atualizar o código do Lambda |
+| `lambda:UpdateFunctionConfiguration` | Definir o handler (deploy define automaticamente) |
 | `lambda:GetFunction` | Verificar se a função existe |
 | `lambda:GetFunctionConfiguration` | Aguardar atualização (`aws lambda wait function-updated`) |
 
@@ -85,6 +86,7 @@ Política mínima sugerida:
       "Effect": "Allow",
       "Action": [
         "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
         "lambda:GetFunction",
         "lambda:GetFunctionConfiguration"
       ],
@@ -129,7 +131,7 @@ git push origin dev
 | Step | Descrição |
 |------|-----------|
 | **build-and-test** | Restore → Build Release → Test |
-| **deploy** | Package Lambda → Configure AWS credentials → Update Lambda function → Wait → Upload artifact |
+| **deploy** | Package Lambda → Configure AWS credentials → Update code → Set handler → Wait → Upload artifact |
 
 ### 5.4 Verificação
 
