@@ -50,7 +50,7 @@ jobs:
         run: |
           export PATH="$PATH:$HOME/.dotnet/tools"
           mkdir -p artifacts
-          dotnet lambda package -o artifacts/VideoProcessor.zip -c Release -pl src/VideoProcessor.Lambda/VideoProcessor.Lambda.csproj
+          dotnet lambda package -o artifacts/VideoProcessor.zip -c Release -pl src/VideoProcessor.Lambda
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
