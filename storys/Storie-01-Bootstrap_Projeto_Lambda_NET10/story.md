@@ -58,6 +58,6 @@ Criar projeto Lambda .NET 10 minimalista (sem AddAWSLambdaHosting), com handler 
 - [ ] Projeto compila e executa localmente (smoke test: handler retorna mock response)
 
 ## Rastreamento (dev tracking)
-- **Início:** —
+- **Início:** 14/02/2026, às 21:00 (Brasília)
 - **Fim:** —
 - **Tempo total de desenvolvimento:** —

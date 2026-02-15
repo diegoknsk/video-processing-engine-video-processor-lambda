@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VideoProcessor.Application/VideoProcessor.Application.csproj" />
+    <Project Path="src/VideoProcessor.Domain/VideoProcessor.Domain.csproj" />
+    <Project Path="src/VideoProcessor.Infra/VideoProcessor.Infra.csproj" />
+    <Project Path="src/VideoProcessor.Lambda/VideoProcessor.Lambda.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VideoProcessor.Tests.Bdd/VideoProcessor.Tests.Bdd.csproj" />
+    <Project Path="tests/VideoProcessor.Tests.Unit/VideoProcessor.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
