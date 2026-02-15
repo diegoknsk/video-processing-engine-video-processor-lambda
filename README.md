@@ -46,6 +46,46 @@ cd publish && zip -r ../artifacts/VideoProcessor.zip .
 | `tests/VideoProcessor.Tests.Unit` | Testes unitários (xUnit) |
 | `tests/VideoProcessor.Tests.Bdd` | Testes BDD (SpecFlow + xUnit) |
 
+## Como Invocar Lambda Manualmente
+
+Para testar e validar o Lambda após o deploy, você pode invocá-lo manualmente de duas formas:
+
+### 1. Via Console AWS
+
+1. Acesse o [AWS Console](https://console.aws.amazon.com/) → **Lambda** → **Functions**
+2. Selecione a função `video-processor-chunk-worker`
+3. Clique na aba **Test**
+4. Crie um novo test event com o payload de `tests/payloads/hello-world-test.json`
+5. Clique em **Test** e valide a resposta
+
+**Resposta esperada:**
+```json
+{
+  "message": "Hello World from Video Processor Lambda",
+  "version": "1.0.0",
+  "timestamp": "2026-02-15T17:14:00.0000000Z",
+  "environment": "dev"
+}
+```
+
+### 2. Via AWS CLI
+
+```bash
+aws lambda invoke \
+  --function-name video-processor-chunk-worker \
+  --payload '{}' \
+  --cli-binary-format raw-in-base64-out \
+  response.json
+
+cat response.json
+```
+
+**Para mais detalhes**, consulte o [Guia de Invocação](docs/INVOCATION_GUIDE.md) com:
+- Passo-a-passo completo (Console + CLI)
+- Como verificar logs no CloudWatch
+- Troubleshooting comum
+- Screenshots e exemplos
+
 ## CI/CD e Deploy
 
 ### Secrets necessários

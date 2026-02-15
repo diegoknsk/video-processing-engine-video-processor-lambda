@@ -3,7 +3,7 @@
 ## Status
 - [ ] Não iniciado
 - [ ] Em progresso
-- [ ] Concluído
+- [x] Concluído
 
 ## Descrição
 Acessar CloudWatch Logs, localizar logs da função Lambda, validar que mensagens estão corretas, e criar documentação completa de invocação (`INVOCATION_GUIDE.md`) consolidando tudo.

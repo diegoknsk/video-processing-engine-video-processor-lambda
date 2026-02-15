@@ -14,6 +14,7 @@ Atualizar o handler Lambda para retornar um payload "Hello World" simples mas in
 - **Tecnologias:** AWS Lambda, .NET 10, C# 13, AWS CLI, CloudWatch Logs
 - **Arquivos criados/modificados:**
   - `src/VideoProcessor.Lambda/Function.cs` (simplificar para Hello World)
+  - `tests/payloads/hello-world-test.json` (payload de teste para AWS)
   - `README.md` (adicionar seção "Como Invocar Lambda Manualmente")
   - `docs/INVOCATION_GUIDE.md` (guia detalhado de invocação)
   - `.github/workflows/deploy.yml` (validar deploy automático)
@@ -45,12 +46,13 @@ Atualizar o handler Lambda para retornar um payload "Hello World" simples mas in
 - [ ] Pipeline GitHub Actions executa com sucesso e atualiza função Lambda
 - [ ] Lambda pode ser invocado manualmente via Console AWS (seção "Test")
 - [ ] Lambda pode ser invocado via AWS CLI: `aws lambda invoke --function-name video-processor-lambda --payload '{}' response.json`
+- [ ] Arquivo `tests/payloads/hello-world-test.json` criado com payload de exemplo para teste manual no Console AWS
 - [ ] Logs aparecem no CloudWatch Logs com: timestamp, request ID, mensagem "Hello World invoked"
 - [ ] `README.md` atualizado com seção "Como Invocar Lambda Manualmente" (Console + CLI)
-- [ ] `docs/INVOCATION_GUIDE.md` criado com: screenshots do Console, comandos CLI completos, troubleshooting comum
+- [ ] `docs/INVOCATION_GUIDE.md` criado com: screenshots do Console, comandos CLI completos, troubleshooting comum, e referência ao payload de teste
 - [ ] Teste manual executado e documentado com prints/screenshots
 
 ## Rastreamento (dev tracking)
-- **Início:** —
+- **Início:** dia 15/02/2026, às 17:14 (Brasília)
 - **Fim:** —
 - **Tempo total de desenvolvimento:** —

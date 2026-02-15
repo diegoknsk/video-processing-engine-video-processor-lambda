@@ -70,6 +70,7 @@ jobs:
         run: |
           aws lambda wait function-updated \
             --function-name video-processor-chunk-worker
+          echo "Lambda function updated successfully"
 
       - name: Upload Lambda package
         uses: actions/upload-artifact@v4

@@ -3,7 +3,7 @@
 ## Status
 - [ ] Não iniciado
 - [ ] Em progresso
-- [ ] Concluído
+- [x] Concluído
 
 ## Descrição
 Atualizar `Function.cs` para retornar um payload JSON simples e informativo tipo "Hello World", removendo qualquer lógica complexa de processamento. Adicionar log estruturado indicando que a função foi invocada.
