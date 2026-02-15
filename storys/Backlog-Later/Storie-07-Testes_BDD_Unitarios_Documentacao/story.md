@@ -1,7 +1,14 @@
 # Storie-07: Testes BDD + Unitários + Documentação Técnica Final
 
+> ⚠️ **STATUS: PAUSADA** – Esta story foi movida para o backlog. Executar após:
+> - Processamento real de vídeo implementado (Storie-05 nova)
+> - Processamento rodando no Lambda (Storie-06 nova)
+> - Integração S3 básica funcionando (Storie-07 nova)
+> 
+> Motivo: BDD end-to-end e cobertura ≥80% devem ser implementados após o fluxo básico funcionar.
+
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
+- **Estado:** ⏸️ Pausada
 - **Data de Conclusão:** [DD/MM/AAAA]
 
 ## Descrição

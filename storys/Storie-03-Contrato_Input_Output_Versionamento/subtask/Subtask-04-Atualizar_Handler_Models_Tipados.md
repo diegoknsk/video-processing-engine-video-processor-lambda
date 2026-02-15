@@ -69,10 +69,10 @@ Refatorar `Function.cs` para deserializar `JsonDocument` em `ChunkProcessorInput
 3. **Teste de erro:** payload com `contractVersion: "999"` retorna FAILED com error.retryable = false
 
 ## Critérios de Aceite da Subtask
-- [ ] Handler deserializa input para `ChunkProcessorInput` tipado
-- [ ] Handler serializa output de `ChunkProcessorOutput` para `JsonDocument`
-- [ ] Validação de `contractVersion` executada antes do processamento
-- [ ] Output mockado contém todos os campos esperados (chunkId, status, framesCount, manifest)
-- [ ] Tratamento de `UnsupportedContractVersionException` retorna FAILED com error.retryable = false
-- [ ] JsonSerializerOptions configurado com camelCase e ignora nulls
-- [ ] Handler compila e executa localmente com payload de teste
+- [x] Handler deserializa input para `ChunkProcessorInput` tipado
+- [x] Handler serializa output de `ChunkProcessorOutput` para `JsonDocument`
+- [x] Validação de `contractVersion` executada antes do processamento
+- [x] Output mockado contém todos os campos esperados (chunkId, status, framesCount, manifest)
+- [x] Tratamento de `UnsupportedContractVersionException` retorna FAILED com error.retryable = false
+- [x] JsonSerializerOptions configurado com camelCase e ignora nulls
+- [x] Handler compila e executa localmente com payload de teste

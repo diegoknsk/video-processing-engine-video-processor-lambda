@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VideoProcessor.Application\VideoProcessor.Application.csproj" />
+    <ProjectReference Include="..\VideoProcessor.Domain\VideoProcessor.Domain.csproj" />
     <ProjectReference Include="..\VideoProcessor.Infra\VideoProcessor.Infra.csproj" />
   </ItemGroup>
 </Project>

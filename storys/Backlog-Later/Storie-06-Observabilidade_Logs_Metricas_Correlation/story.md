@@ -1,7 +1,14 @@
 # Storie-06: Observabilidade (Logs Estruturados + Métricas + Correlation)
 
+> ⚠️ **STATUS: PAUSADA** – Esta story foi movida para o backlog. Executar após:
+> - Processamento real de vídeo implementado (Storie-05 nova)
+> - Processamento rodando no Lambda (Storie-06 nova)
+> - Integração S3 básica funcionando (Storie-07 nova)
+> 
+> Motivo: Observabilidade avançada (métricas customizadas, correlation) deve ser implementada após o fluxo básico funcionar.
+
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
+- **Estado:** ⏸️ Pausada
 - **Data de Conclusão:** [DD/MM/AAAA]
 
 ## Descrição

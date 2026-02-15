@@ -32,9 +32,9 @@ Criar testes unitários que validam deserialização de input, serialização de
 3. **Validação de JSON:** comparar JSON serializado com estrutura esperada (usando JToken.DeepEquals ou similar)
 
 ## Critérios de Aceite da Subtask
-- [ ] Testes de `ChunkProcessorInput` cobrem: deserialização completa, mínima, campos opcionais, JSON inválido
-- [ ] Testes de `ChunkProcessorOutput` cobrem: SUCCEEDED com manifest, FAILED com error, enum como string, null omitido
-- [ ] Testes de `ContractVersionValidator` cobrem: versão válida, versão inválida, mensagem de exceção
-- [ ] Todos os testes passam: `dotnet test tests/VideoProcessor.Tests.Unit`
-- [ ] Cobertura de código dos models ≥ 95%
-- [ ] FluentAssertions utilizado para asserções legíveis
+- [x] Testes de `ChunkProcessorInput` cobrem: deserialização completa, mínima, campos opcionais, JSON inválido
+- [x] Testes de `ChunkProcessorOutput` cobrem: SUCCEEDED com manifest, FAILED com error, enum como string, null omitido
+- [x] Testes de `ContractVersionValidator` cobrem: versão válida, versão inválida, mensagem de exceção
+- [x] Todos os testes passam: `dotnet test tests/VideoProcessor.Tests.Unit`
+- [x] Cobertura de código dos models ≥ 95%
+- [x] FluentAssertions utilizado para asserções legíveis

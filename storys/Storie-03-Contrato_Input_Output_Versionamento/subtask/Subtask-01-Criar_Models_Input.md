@@ -57,8 +57,8 @@ Criar records C# 13 para representar o input do Lambda: `ChunkProcessorInput` (r
 3. **Validação de tipos:** confirmar que campos obrigatórios não permitem null e opcionais permitem
 
 ## Critérios de Aceite da Subtask
-- [ ] Records `ChunkInfo`, `SourceInfo`, `OutputConfig`, `ChunkProcessorInput` criados
-- [ ] Campos obrigatórios vs opcionais definidos corretamente (Etag, VersionId, ExecutionArn, FramesBucket/Prefix opcionais)
-- [ ] Anotações JSON configuradas (camelCase se necessário)
-- [ ] Projeto Domain compila sem warnings de nullability
-- [ ] Estrutura reflete exatamente o payload esperado do Map da Step Functions
+- [x] Records `ChunkInfo`, `SourceInfo`, `OutputConfig`, `ChunkProcessorInput` criados
+- [x] Campos obrigatórios vs opcionais definidos corretamente (Etag, VersionId, ExecutionArn, FramesBucket/Prefix opcionais)
+- [x] Anotações JSON configuradas (camelCase se necessário)
+- [x] Projeto Domain compila sem warnings de nullability
+- [x] Estrutura reflete exatamente o payload esperado do Map da Step Functions

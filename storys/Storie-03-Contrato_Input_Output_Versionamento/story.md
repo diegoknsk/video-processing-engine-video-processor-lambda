@@ -1,8 +1,8 @@
 # Storie-03: Contrato de Input/Output + Versionamento (contractVersion)
 
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
-- **Data de Conclusão:** [DD/MM/AAAA]
+- **Estado:** ✅ Concluída
+- **Data de Conclusão:** 15/02/2026
 
 ## Descrição
 Como desenvolvedor do Lambda Worker, quero definir contratos tipados para input e output do handler usando records C# 13 e implementar versionamento via `contractVersion`, para garantir evolução segura do contrato e compatibilidade com Step Functions ao longo do tempo.
@@ -38,23 +38,23 @@ Criar models (records) para `ChunkProcessorInput` e `ChunkProcessorOutput`, impl
   - Definição clara dos campos obrigatórios vs opcionais no contrato
 
 ## Subtasks
-- [Subtask 01: Criar models de input (ChunkProcessorInput e dependentes)](./subtask/Subtask-01-Criar_Models_Input.md)
-- [Subtask 02: Criar models de output (ChunkProcessorOutput e dependentes)](./subtask/Subtask-02-Criar_Models_Output.md)
-- [Subtask 03: Implementar versionamento e exceções de versão não suportada](./subtask/Subtask-03-Implementar_Versionamento.md)
-- [Subtask 04: Atualizar Function handler para usar models tipados](./subtask/Subtask-04-Atualizar_Handler_Models_Tipados.md)
-- [Subtask 05: Criar testes unitários de serialização/deserialização](./subtask/Subtask-05-Testes_Serializacao.md)
+- [x] [Subtask 01: Criar models de input (ChunkProcessorInput e dependentes)](./subtask/Subtask-01-Criar_Models_Input.md)
+- [x] [Subtask 02: Criar models de output (ChunkProcessorOutput e dependentes)](./subtask/Subtask-02-Criar_Models_Output.md)
+- [x] [Subtask 03: Implementar versionamento e exceções de versão não suportada](./subtask/Subtask-03-Implementar_Versionamento.md)
+- [x] [Subtask 04: Atualizar Function handler para usar models tipados](./subtask/Subtask-04-Atualizar_Handler_Models_Tipados.md)
+- [x] [Subtask 05: Criar testes unitários de serialização/deserialização](./subtask/Subtask-05-Testes_Serializacao.md)
 
 ## Critérios de Aceite da História
-- [ ] Records criados para input: `ChunkProcessorInput`, `ChunkInfo`, `SourceInfo`, `OutputConfig`
-- [ ] Records criados para output: `ChunkProcessorOutput`, `ManifestInfo`, `ErrorInfo`
-- [ ] Campo `contractVersion` validado no handler; versões suportadas: "1.0"
-- [ ] Handler deserializa `JsonDocument` para `ChunkProcessorInput` e serializa `ChunkProcessorOutput` para `JsonDocument`
-- [ ] Output contém todos os campos: `chunkId`, `status` (SUCCEEDED/FAILED), `framesCount`, `manifest`, `error` (quando aplicável)
-- [ ] Exceção `UnsupportedContractVersionException` lançada para versões desconhecidas
-- [ ] Testes unitários cobrem: (a) deserialização de input válido, (b) serialização de output, (c) validação de contractVersion, (d) tratamento de versão inválida
-- [ ] Handler executa localmente com payload de teste retornando output mockado estruturado
+- [x] Records criados para input: `ChunkProcessorInput`, `ChunkInfo`, `SourceInfo`, `OutputConfig`
+- [x] Records criados para output: `ChunkProcessorOutput`, `ManifestInfo`, `ErrorInfo`
+- [x] Campo `contractVersion` validado no handler; versões suportadas: "1.0"
+- [x] Handler deserializa `JsonDocument` para `ChunkProcessorInput` e serializa `ChunkProcessorOutput` para `JsonDocument`
+- [x] Output contém todos os campos: `chunkId`, `status` (SUCCEEDED/FAILED), `framesCount`, `manifest`, `error` (quando aplicável)
+- [x] Exceção `UnsupportedContractVersionException` lançada para versões desconhecidas
+- [x] Testes unitários cobrem: (a) deserialização de input válido, (b) serialização de output, (c) validação de contractVersion, (d) tratamento de versão inválida
+- [x] Handler executa localmente com payload de teste retornando output mockado estruturado
 
 ## Rastreamento (dev tracking)
-- **Início:** —
-- **Fim:** —
-- **Tempo total de desenvolvimento:** —
+- **Início:** 15/02/2026, às 16:37 (Brasília)
+- **Fim:** 15/02/2026, às 16:47 (Brasília)
+- **Tempo total de desenvolvimento:** 10min

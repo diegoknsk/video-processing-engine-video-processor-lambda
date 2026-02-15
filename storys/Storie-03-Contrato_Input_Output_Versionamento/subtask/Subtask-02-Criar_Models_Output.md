@@ -53,8 +53,8 @@ Criar records C# 13 para representar o output do Lambda: `ChunkProcessorOutput` 
 3. **Enum como string:** verificar que `ProcessingStatus` serializa como "SUCCEEDED"/"FAILED" (não como número)
 
 ## Critérios de Aceite da Subtask
-- [ ] Records `ProcessingStatus`, `ManifestInfo`, `ErrorInfo`, `ChunkProcessorOutput` criados
-- [ ] Enum `ProcessingStatus` serializa como string (SUCCEEDED/FAILED)
-- [ ] Campos opcionais: `Manifest` (null em FAILED), `Error` (null em SUCCEEDED)
-- [ ] Anotações JSON configuradas (camelCase)
-- [ ] Projeto Domain compila sem warnings
+- [x] Records `ProcessingStatus`, `ManifestInfo`, `ErrorInfo`, `ChunkProcessorOutput` criados
+- [x] Enum `ProcessingStatus` serializa como string (SUCCEEDED/FAILED)
+- [x] Campos opcionais: `Manifest` (null em FAILED), `Error` (null em SUCCEEDED)
+- [x] Anotações JSON configuradas (camelCase)
+- [x] Projeto Domain compila sem warnings

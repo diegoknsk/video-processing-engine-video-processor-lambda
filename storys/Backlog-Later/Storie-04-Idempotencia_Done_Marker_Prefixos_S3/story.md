@@ -1,7 +1,14 @@
 # Storie-04: Idempotência (done.json marker) + Convenção de Prefixos S3
 
+> ⚠️ **STATUS: PAUSADA** – Esta story foi movida para o backlog. Executar após:
+> - Processamento real de vídeo implementado (Storie-05)
+> - Processamento rodando no Lambda (Storie-06)
+> - Integração S3 básica funcionando (Storie-07)
+> 
+> Motivo: Idempotência é uma robustez avançada que deve ser implementada após o fluxo básico funcionar.
+
 ## Status
-- **Estado:** 🔄 Em desenvolvimento
+- **Estado:** ⏸️ Pausada
 - **Data de Conclusão:** [DD/MM/AAAA]
 
 ## Descrição

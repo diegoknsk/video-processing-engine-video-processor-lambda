@@ -56,9 +56,9 @@ Criar exceção customizada `UnsupportedContractVersionException`, implementar l
 3. **Teste de integração:** invocar handler com `contractVersion: "999"` e verificar exceção
 
 ## Critérios de Aceite da Subtask
-- [ ] `UnsupportedContractVersionException` criada com propriedades `ReceivedVersion` e `SupportedVersions`
-- [ ] `IContractVersionValidator` e implementação criados
-- [ ] Versão "1.0" definida como suportada
-- [ ] Validador registrado no DI
-- [ ] Testes unitários cobrem: versão válida (não lança exceção), versão inválida (lança exceção com mensagem clara)
-- [ ] Documentação lista versões suportadas
+- [x] `UnsupportedContractVersionException` criada com propriedades `ReceivedVersion` e `SupportedVersions`
+- [x] `IContractVersionValidator` e implementação criados
+- [x] Versão "1.0" definida como suportada
+- [x] Validador registrado no DI
+- [x] Testes unitários cobrem: versão válida (não lança exceção), versão inválida (lança exceção com mensagem clara)
+- [x] Documentação lista versões suportadas
