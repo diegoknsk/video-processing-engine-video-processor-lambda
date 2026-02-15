@@ -19,16 +19,15 @@ Configurar em: **Settings** → **Secrets and variables** → **Actions** → **
 
 \* **AWS_SESSION_TOKEN:** obrigatório quando usar credenciais temporárias (AWS Academy, AssumeRole, STS). Se usar IAM User permanente, pode deixar vazio ou criar o secret com valor vazio.
 
-### 1.2 GitHub Variables (opcionais)
+### 1.2 GitHub Variables (configuráveis)
 
-O workflow atual **não usa Variables** — o nome da função e a região vêm dos **Secrets**. Se quiser parametrizar no futuro:
+Configurar em: **Settings** → **Secrets and variables** → **Actions** → **Variables** → **New repository variable**.
 
-| Variable | Descrição | Valor atual (hardcoded) |
-|----------|-----------|-------------------------|
-| **AWS_REGION** | Região AWS | Usa `secrets.AWS_REGION` |
-| **LAMBDA_FUNCTION_NAME** | Nome da função Lambda | `video-processor-chunk-worker` |
+| Variable | Descrição | Obrigatório | Padrão |
+|----------|-----------|-------------|--------|
+| **LAMBDA_FUNCTION_NAME** | Nome da função Lambda já criada na AWS (o deploy só atualiza o código) | Não* | `video-processor-chunk-worker` |
 
-> **Nota:** O workflow `.github/workflows/deploy-lambda.yml` usa o nome fixo `video-processor-chunk-worker`. Para alterar, edite o arquivo do workflow ou parametrize com Variables.
+\* Se você já tem um Lambda com outro nome na AWS, crie a variable **LAMBDA_FUNCTION_NAME** com esse nome. Caso contrário o workflow usa o padrão.
 
 ---
 
@@ -38,7 +37,8 @@ O workflow atual **não usa Variables** — o nome da função e a região vêm 
 |------|-------------|
 | **GitHub Secrets** | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` |
 | **GitHub Secrets** (credenciais temporárias) | + `AWS_SESSION_TOKEN` |
-| **AWS** | Função Lambda criada com nome `video-processor-chunk-worker` na região configurada |
+| **GitHub Variables** | `LAMBDA_FUNCTION_NAME` = nome do seu Lambda na AWS (opcional; padrão: `video-processor-chunk-worker`) |
+| **AWS** | Função Lambda já criada na região configurada (o deploy só atualiza o código) |
 
 ### Handler da função Lambda
 
@@ -88,11 +88,11 @@ Política mínima sugerida:
         "lambda:GetFunction",
         "lambda:GetFunctionConfiguration"
       ],
-      "Resource": "arn:aws:lambda:*:*:function:video-processor-chunk-worker"
+      "Resource": "arn:aws:lambda:*:*:function:SEU_NOME_DA_FUNCAO"
     }
   ]
 }
-```
+Substitua `SEU_NOME_DA_FUNCAO` pelo mesmo nome que você configurou em **LAMBDA_FUNCTION_NAME** (ou pelo nome da função no Console AWS).
 
 ---
 
@@ -111,14 +111,16 @@ Política mínima sugerida:
 
 ### 5.2 Deploy automático
 
-O workflow é disparado automaticamente em **push** para as branches:
+O workflow é disparado:
 
-- `main`
-- `dev`
+- **Automaticamente:** em **push** para a branch `main`
+- **Manualmente:** em **Actions** → **Deploy Lambda** → **Run workflow**
 
 ```bash
-git add .
-git commit -m "feat: sua mensagem"
+# Deploy automático (após merge em main)
+git push origin main
+
+# Para apenas subir código em dev (não dispara deploy)
 git push origin dev
 ```
 
@@ -133,7 +135,7 @@ git push origin dev
 
 1. Acesse **GitHub** → **Actions** e verifique se o workflow **Deploy Lambda** concluiu com sucesso
 2. Procure pela mensagem: `Lambda function updated successfully`
-3. No **AWS Console** → **Lambda** → **Functions** → `video-processor-chunk-worker`:
+3. No **AWS Console** → **Lambda** → **Functions** → (nome da sua função = valor de **LAMBDA_FUNCTION_NAME**):
    - Verifique **Last modified** (deve ser recente)
    - Use a aba **Test** para invocar e validar
 
@@ -147,7 +149,7 @@ git push origin dev
 | Secret | AWS_SECRET_ACCESS_KEY | Sim | Deploy |
 | Secret | AWS_REGION | Sim | Ex.: `us-east-1` |
 | Secret | AWS_SESSION_TOKEN | Sim* | *Obrigatório para credenciais temporárias (AWS Academy) |
-| — | LAMBDA_FUNCTION_NAME | — | Fixo no workflow: `video-processor-chunk-worker` |
+| Variable | LAMBDA_FUNCTION_NAME | Não | Nome do Lambda na AWS; padrão: `video-processor-chunk-worker` |
 
 ---
 
@@ -156,7 +158,7 @@ git push origin dev
 | Problema | Solução |
 |---------|---------|
 | **"The security token included in the request is expired"** | Renove as credenciais no AWS Academy e atualize os Secrets |
-| **"Function not found"** | Verifique se o nome da função é `video-processor-chunk-worker` e se a região está correta |
+| **"Function not found"** | Confira a Variable **LAMBDA_FUNCTION_NAME** (nome exato do Lambda na AWS) e a região em **AWS_REGION** |
 | **Build/Test falha** | Verifique os logs do step `build-and-test`; rode `dotnet build` e `dotnet test` localmente |
 | **Deploy falha no step "Configure AWS credentials"** | Verifique se os Secrets estão preenchidos corretamente (sem espaços extras) |
 
