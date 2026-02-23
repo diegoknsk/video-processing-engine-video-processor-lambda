@@ -65,6 +65,15 @@ dotnet run --project src/VideoProcessor.CLI -- --video sample.mp4 --interval 20 
 - `--video`: caminho do arquivo de vídeo (ex.: `sample.mp4`)
 - `--interval`: intervalo em segundos entre cada frame (ex.: 20 = um frame a cada 20 s)
 - `--output`: pasta onde os frames serão salvos (ex.: `output/frames`)
+- `--start` (opcional): tempo de início do trecho em segundos
+- `--end` (opcional): tempo de fim do trecho em segundos. Quando informados, apenas o trecho [start, end] é processado.
+
+Exemplo para processar apenas o primeiro minuto (0s a 59s) e depois o segundo minuto (60s a 119s) em um vídeo longo:
+
+```bash
+dotnet run --project src/VideoProcessor.CLI -- --video sample.mp4 --interval 20 --output out/ --start 0 --end 59
+dotnet run --project src/VideoProcessor.CLI -- --video sample.mp4 --interval 20 --output out/ --start 60 --end 119
+```
 
 Os frames são gerados com nomes determinísticos: `frame_0001_0s.jpg`, `frame_0002_20s.jpg`, etc. A mesma duração e o mesmo intervalo sempre geram a mesma quantidade de frames.
 

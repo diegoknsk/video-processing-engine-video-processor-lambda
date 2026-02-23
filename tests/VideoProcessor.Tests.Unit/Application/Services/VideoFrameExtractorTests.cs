@@ -83,4 +83,76 @@ public class VideoFrameExtractorTests
 
         expectedCount.Should().Be(5);
     }
+
+    [Fact]
+    public async Task ExtractFramesAsync_StartTimeNegative_ThrowsArgumentOutOfRangeException()
+    {
+        var videoPath = Path.GetTempFileName();
+        var outputFolder = Path.Combine(Path.GetTempPath(), "frames-" + Guid.NewGuid().ToString("N")[..8]);
+        try
+        {
+            var act = () => _sut.ExtractFramesAsync(videoPath, 20, outputFolder, startTimeSeconds: -1, endTimeSeconds: null);
+
+            await act.Should().ThrowAsync<ArgumentOutOfRangeException>()
+                .WithParameterName("startTimeSeconds")
+                .WithMessage("*>= 0*");
+        }
+        finally
+        {
+            if (File.Exists(videoPath)) File.Delete(videoPath);
+        }
+    }
+
+    [Fact]
+    public async Task ExtractFramesAsync_StartGreaterThanOrEqualEnd_ThrowsArgumentOutOfRangeException()
+    {
+        var videoPath = Path.GetTempFileName();
+        var outputFolder = Path.Combine(Path.GetTempPath(), "frames-" + Guid.NewGuid().ToString("N")[..8]);
+        try
+        {
+            var act = () => _sut.ExtractFramesAsync(videoPath, 20, outputFolder, startTimeSeconds: 60, endTimeSeconds: 40);
+
+            await act.Should().ThrowAsync<ArgumentOutOfRangeException>()
+                .WithParameterName("endTimeSeconds")
+                .WithMessage("*maior que o tempo de início*");
+        }
+        finally
+        {
+            if (File.Exists(videoPath)) File.Delete(videoPath);
+        }
+    }
+
+    [Fact]
+    public async Task ExtractFramesAsync_StartEqualsEnd_ThrowsArgumentOutOfRangeException()
+    {
+        var videoPath = Path.GetTempFileName();
+        var outputFolder = Path.Combine(Path.GetTempPath(), "frames-" + Guid.NewGuid().ToString("N")[..8]);
+        try
+        {
+            var act = () => _sut.ExtractFramesAsync(videoPath, 20, outputFolder, startTimeSeconds: 30, endTimeSeconds: 30);
+
+            await act.Should().ThrowAsync<ArgumentOutOfRangeException>()
+                .WithParameterName("endTimeSeconds");
+        }
+        finally
+        {
+            if (File.Exists(videoPath)) File.Delete(videoPath);
+        }
+    }
+
+    [Fact(Skip = "Requer arquivo de vídeo real para obter duração; executar manualmente com sample.mp4 na raiz do projeto.")]
+    public async Task ExtractFramesAsync_EndGreaterThanVideoDuration_ThrowsArgumentOutOfRangeException()
+    {
+        var videoPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "sample.mp4");
+        var fullPath = Path.GetFullPath(videoPath);
+        if (!File.Exists(fullPath))
+            return;
+
+        var outputFolder = Path.Combine(Path.GetTempPath(), "frames-" + Guid.NewGuid().ToString("N")[..8]);
+        var act = () => _sut.ExtractFramesAsync(fullPath, 20, outputFolder, startTimeSeconds: 0, endTimeSeconds: 999999);
+
+        await act.Should().ThrowAsync<ArgumentOutOfRangeException>()
+            .WithParameterName("endTimeSeconds")
+            .WithMessage("*exceder a duração*");
+    }
 }

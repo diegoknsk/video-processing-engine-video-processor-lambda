@@ -9,10 +9,12 @@ static string? GetArg(string[] args, string name)
 
 static void PrintUsage()
 {
-    Console.WriteLine("Uso: dotnet run -- --video <caminho> --interval <segundos> --output <pasta>");
+    Console.WriteLine("Uso: dotnet run -- --video <caminho> --interval <segundos> --output <pasta> [--start <s>] [--end <s>]");
     Console.WriteLine("  --video    Caminho do arquivo de vídeo (ex: sample.mp4)");
     Console.WriteLine("  --interval Intervalo em segundos entre frames (ex: 20)");
     Console.WriteLine("  --output   Pasta de saída dos frames (ex: output/frames)");
+    Console.WriteLine("  --start    (Opcional) Tempo de início do trecho em segundos (ex: 0 para primeiro minuto: --start 0 --end 59)");
+    Console.WriteLine("  --end      (Opcional) Tempo de fim do trecho em segundos (ex: 59 para processar 0s a 59s)");
 }
 
 var video = GetArg(args, "--video");
@@ -39,8 +41,33 @@ if (!File.Exists(videoPath))
     return 1;
 }
 
+int? startSeconds = null;
+int? endSeconds = null;
+var startStr = GetArg(args, "--start");
+var endStr = GetArg(args, "--end");
+if (startStr != null)
+{
+    if (!int.TryParse(startStr, out var startVal) || startVal < 0)
+    {
+        Console.Error.WriteLine("Erro: --start deve ser um número >= 0.");
+        return 1;
+    }
+    startSeconds = startVal;
+}
+if (endStr != null)
+{
+    if (!int.TryParse(endStr, out var endVal) || endVal < 0)
+    {
+        Console.Error.WriteLine("Erro: --end deve ser um número >= 0.");
+        return 1;
+    }
+    endSeconds = endVal;
+}
+
 Console.WriteLine($"Processando vídeo: {Path.GetFileName(videoPath)}");
 Console.WriteLine($"Intervalo: {interval}s");
+if (startSeconds.HasValue || endSeconds.HasValue)
+    Console.WriteLine($"Trecho: {startSeconds ?? 0}s a {endSeconds?.ToString() ?? "fim"}");
 Console.WriteLine();
 
 await FFmpegSetup.EnsureFFmpegInstalledAsync();
@@ -54,7 +81,7 @@ var progress = new Progress<(int Current, int Total)>(p =>
 });
 
 var extractor = new VideoFrameExtractor(progress);
-var result = await extractor.ExtractFramesAsync(videoPath, interval, output);
+var result = await extractor.ExtractFramesAsync(videoPath, interval, output, startSeconds, endSeconds);
 
 Console.WriteLine();
 Console.WriteLine("---");

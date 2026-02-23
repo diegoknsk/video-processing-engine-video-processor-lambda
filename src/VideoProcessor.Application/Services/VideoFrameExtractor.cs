@@ -21,7 +21,9 @@ public class VideoFrameExtractor : IVideoFrameExtractor
     public async Task<FrameExtractionResult> ExtractFramesAsync(
         string videoPath,
         int intervalSeconds,
-        string outputFolder)
+        string outputFolder,
+        int? startTimeSeconds = null,
+        int? endTimeSeconds = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(videoPath);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputFolder);
@@ -30,6 +32,11 @@ public class VideoFrameExtractor : IVideoFrameExtractor
 
         if (!File.Exists(videoPath))
             throw new FileNotFoundException("Arquivo de vídeo não encontrado.", videoPath);
+
+        if (startTimeSeconds is { } startVal && startVal < 0)
+            throw new ArgumentOutOfRangeException(nameof(startTimeSeconds), startTimeSeconds, "Tempo de início deve ser >= 0.");
+        if (startTimeSeconds.HasValue && endTimeSeconds.HasValue && startTimeSeconds.Value >= endTimeSeconds.Value)
+            throw new ArgumentOutOfRangeException(nameof(endTimeSeconds), endTimeSeconds, "Tempo de fim deve ser maior que o tempo de início.");
 
         Directory.CreateDirectory(outputFolder);
 
@@ -45,17 +52,25 @@ public class VideoFrameExtractor : IVideoFrameExtractor
         }
 
         var duration = mediaInfo.Duration;
-        var totalFrames = (int)(duration.TotalSeconds / intervalSeconds);
-        if (totalFrames == 0)
+        var durationSeconds = (int)Math.Floor(duration.TotalSeconds);
+
+        var startE = startTimeSeconds ?? 0;
+        var endE = endTimeSeconds ?? durationSeconds;
+
+        if (endE > durationSeconds)
+            throw new ArgumentOutOfRangeException(nameof(endTimeSeconds), endTimeSeconds, "Tempo de fim não pode exceder a duração do vídeo.");
+
+        var totalFrames = (endE - startE) / intervalSeconds + 1;
+        if (totalFrames < 1)
             totalFrames = 1;
 
         var framePaths = new List<string>(totalFrames);
 
         for (var i = 0; i < totalFrames; i++)
         {
-            var currentTime = TimeSpan.FromSeconds(i * intervalSeconds);
-            var secondsLabel = (int)currentTime.TotalSeconds;
-            var fileName = $"frame_{(i + 1):D4}_{secondsLabel}s.jpg";
+            var currentSeconds = startE + (i * intervalSeconds);
+            var currentTime = TimeSpan.FromSeconds(currentSeconds);
+            var fileName = $"frame_{(i + 1):D4}_{currentSeconds}s.jpg";
             var outputPath = Path.Combine(outputFolder, fileName);
 
             var conversion = await FFmpeg.Conversions.FromSnippet.Snapshot(videoPath, outputPath, currentTime);
