@@ -43,8 +43,30 @@ cd publish && zip -r ../artifacts/VideoProcessor.zip .
 | `src/VideoProcessor.Application` | Use cases e regras de negócio |
 | `src/VideoProcessor.Infra` | Implementações (S3, etc.) |
 | `src/VideoProcessor.Lambda` | Handler Lambda e bootstrap de DI |
+| `src/VideoProcessor.CLI` | Aplicação console para processamento local de vídeo (extração de frames) |
 | `tests/VideoProcessor.Tests.Unit` | Testes unitários (xUnit) |
 | `tests/VideoProcessor.Tests.Bdd` | Testes BDD (SpecFlow + xUnit) |
+
+## Processamento Local de Vídeo
+
+É possível testar a extração de frames localmente (Windows) antes de rodar no Lambda.
+
+### Pré-requisitos
+
+- .NET 10 SDK
+- FFmpeg: na primeira execução da CLI, o binário é baixado automaticamente para `%USERPROFILE%\.ffmpeg` (via Xabe.FFmpeg.Downloader). Alternativamente, instale o FFmpeg manualmente e configure o `PATH` ou o caminho dos executáveis.
+
+### Como executar
+
+```bash
+dotnet run --project src/VideoProcessor.CLI -- --video sample.mp4 --interval 20 --output output/frames
+```
+
+- `--video`: caminho do arquivo de vídeo (ex.: `sample.mp4`)
+- `--interval`: intervalo em segundos entre cada frame (ex.: 20 = um frame a cada 20 s)
+- `--output`: pasta onde os frames serão salvos (ex.: `output/frames`)
+
+Os frames são gerados com nomes determinísticos: `frame_0001_0s.jpg`, `frame_0002_20s.jpg`, etc. A mesma duração e o mesmo intervalo sempre geram a mesma quantidade de frames.
 
 ## Como Invocar Lambda Manualmente
 

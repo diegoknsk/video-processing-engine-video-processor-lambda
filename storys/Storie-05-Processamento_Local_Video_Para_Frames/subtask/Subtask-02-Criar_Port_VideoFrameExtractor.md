@@ -1,9 +1,7 @@
 # Subtask 02: Criar port IVideoFrameExtractor no Domain
 
 ## Status
-- [ ] Não iniciado
-- [ ] Em progresso
-- [ ] Concluído
+- [x] Concluído
 
 ## Descrição
 Criar interface (port) `IVideoFrameExtractor` no Domain seguindo Clean Architecture, definindo contrato para extração de frames de vídeos.
