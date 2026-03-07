@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\VideoProcessor.Domain\VideoProcessor.Domain.csproj" />
-    <ProjectReference Include="..\..\src\VideoProcessor.Application\VideoProcessor.Application.csproj" />
-    <ProjectReference Include="..\..\src\VideoProcessor.Infra\VideoProcessor.Infra.csproj" />
+    <ProjectReference Include="..\..\src\Core\VideoProcessor.Domain\VideoProcessor.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Core\VideoProcessor.Application\VideoProcessor.Application.csproj" />
+    <ProjectReference Include="..\..\src\Infra\VideoProcessor.Infra\VideoProcessor.Infra.csproj" />
   </ItemGroup>
 
 </Project>

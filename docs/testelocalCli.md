@@ -1,0 +1,1 @@
+dotnet run --project src/InterfacesExternas/VideoProcessor.CLI -- --video "C:\Projetos\Fiap\Videos\entrada\teste1.mp4" --interval 2 --output "C:\Projetos\Fiap\Videos\saida" --start 0 --end 10

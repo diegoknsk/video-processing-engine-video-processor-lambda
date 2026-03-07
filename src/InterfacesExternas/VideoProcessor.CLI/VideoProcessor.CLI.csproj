@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoProcessor.Application\VideoProcessor.Application.csproj" />
-    <ProjectReference Include="..\VideoProcessor.Domain\VideoProcessor.Domain.csproj" />
+    <ProjectReference Include="..\..\Core\VideoProcessor.Application\VideoProcessor.Application.csproj" />
+    <ProjectReference Include="..\..\Core\VideoProcessor.Domain\VideoProcessor.Domain.csproj" />
   </ItemGroup>
 
 </Project>
