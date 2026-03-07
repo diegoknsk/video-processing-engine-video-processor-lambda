@@ -34,6 +34,7 @@ public class Function
 
     public async Task<string> FunctionHandler(ChunkProcessorInput input, ILambdaContext context)
     {
+        TrySetFfmpegPathFromEnvOrKnownPaths();
         if (!IsFfmpegConfigured() && !_ffmpegEnsured)
         {
             await FFmpegSetup.EnsureFFmpegInstalledAsync();

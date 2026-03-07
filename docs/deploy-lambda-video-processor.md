@@ -53,6 +53,8 @@ A aplicação procura, nesta ordem:
 
 Recomendação: usar um **Lambda Layer** com FFmpeg para Amazon Linux 2 e anexar à função. O layer costuma expor os binários em `/opt/ffmpeg` ou `/opt/bin`.
 
+**Sistema de arquivos no Lambda:** No ambiente AWS Lambda, apenas o diretório **`/tmp`** é gravável; `/var/task` (código da função) é somente leitura. Se o FFmpeg não for encontrado via Layer ou `FFMPEG_PATH`, a aplicação usa **`/tmp/.ffmpeg`** como fallback para download dos binários (consumindo tempo e espaço de `/tmp`, limitado a 512 MB). Por isso, configurar um **Lambda Layer** com FFmpeg em `/opt/ffmpeg` ou `/opt/bin` é a abordagem recomendada.
+
 ### Como anexar o Layer à função
 
 **Console AWS:**
