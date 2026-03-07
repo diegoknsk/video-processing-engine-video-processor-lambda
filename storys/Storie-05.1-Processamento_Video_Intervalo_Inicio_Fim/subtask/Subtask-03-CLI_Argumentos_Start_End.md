@@ -15,7 +15,7 @@ Incluir na aplicação console (VideoProcessor.CLI) os argumentos opcionais `--s
 - Executar com `--start 60 --end 119`: deve gerar frames apenas no segundo minuto; verificar contagem e nomes dos arquivos.
 
 ## Critérios de aceite da subtask
-- [ ] CLI aceita `--start N` e `--end N` (opcionais); valores em segundos.
-- [ ] Sem `--start`/`--end`, o comportamento é igual ao atual (vídeo inteiro).
-- [ ] Com `--start` e `--end`, apenas o trecho indicado é processado e os frames aparecem na pasta de saída.
-- [ ] Documentação (README ou --help) inclui exemplo de uso com intervalo (ex.: 0–59 e 60–119).
+- [x] CLI aceita `--start N` e `--end N` (opcionais); valores em segundos.
+- [x] Sem `--start`/`--end`, o comportamento é igual ao atual (vídeo inteiro).
+- [x] Com `--start` e `--end`, apenas o trecho indicado é processado e os frames aparecem na pasta de saída.
+- [x] Documentação (README ou --help) inclui exemplo de uso com intervalo (ex.: 0–59 e 60–119).
