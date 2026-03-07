@@ -1,11 +1,16 @@
 <Solution>
-  <Folder Name="/src/">
-    <Project Path="src/VideoProcessor.Application/VideoProcessor.Application.csproj" />
-    <Project Path="src/VideoProcessor.Domain/VideoProcessor.Domain.csproj" />
-    <Project Path="src/VideoProcessor.Infra/VideoProcessor.Infra.csproj" />
-    <Project Path="src/VideoProcessor.Lambda/VideoProcessor.Lambda.csproj" />
+  <Folder Name="/Core/">
+    <Project Path="src/Core/VideoProcessor.Domain/VideoProcessor.Domain.csproj" />
+    <Project Path="src/Core/VideoProcessor.Application/VideoProcessor.Application.csproj" />
   </Folder>
-  <Folder Name="/tests/">
+  <Folder Name="/Infra/">
+    <Project Path="src/Infra/VideoProcessor.Infra/VideoProcessor.Infra.csproj" />
+  </Folder>
+  <Folder Name="/InterfacesExternas/">
+    <Project Path="src/InterfacesExternas/VideoProcessor.CLI/VideoProcessor.CLI.csproj" />
+    <Project Path="src/InterfacesExternas/VideoProcessor.Lambda/VideoProcessor.Lambda.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
     <Project Path="tests/VideoProcessor.Tests.Bdd/VideoProcessor.Tests.Bdd.csproj" />
     <Project Path="tests/VideoProcessor.Tests.Unit/VideoProcessor.Tests.Unit.csproj" />
   </Folder>

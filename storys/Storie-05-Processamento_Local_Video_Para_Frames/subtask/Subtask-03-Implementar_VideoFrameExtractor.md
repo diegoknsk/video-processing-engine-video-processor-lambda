@@ -1,9 +1,7 @@
 # Subtask 03: Implementar VideoFrameExtractor com extração parametrizável
 
 ## Status
-- [ ] Não iniciado
-- [ ] Em progresso
-- [ ] Concluído
+- [x] Concluído
 
 ## Descrição
 Criar implementação concreta de `IVideoFrameExtractor` usando Xabe.FFmpeg, implementando lógica de extração de frames em intervalos parametrizáveis.

@@ -1,9 +1,7 @@
 # Subtask 05: Validar extração com vídeo real e criar testes unitários
 
 ## Status
-- [ ] Não iniciado
-- [ ] Em progresso
-- [ ] Concluído
+- [x] Concluído
 
 ## Descrição
 Executar processamento local com vídeo real, validar que frames são gerados corretamente, e criar testes unitários para `VideoFrameExtractor` cobrindo cenários principais.

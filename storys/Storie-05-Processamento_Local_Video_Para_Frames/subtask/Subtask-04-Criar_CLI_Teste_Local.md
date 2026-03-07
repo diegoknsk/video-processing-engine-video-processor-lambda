@@ -1,9 +1,7 @@
 # Subtask 04: Criar aplicação console CLI para teste local
 
 ## Status
-- [ ] Não iniciado
-- [ ] Em progresso
-- [ ] Concluído
+- [x] Concluído
 
 ## Descrição
 Criar novo projeto console (`VideoProcessor.CLI`) que permite testar a extração de frames localmente via linha de comando, recebendo parâmetros como caminho do vídeo, intervalo, e pasta de saída.

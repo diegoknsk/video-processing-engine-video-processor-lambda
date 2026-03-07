@@ -36,14 +36,12 @@ If already installed check if new version is available.
     dotnet tool update -g Amazon.Lambda.Tools
 ```
 
-Execute unit tests
+Execute unit tests (from repository root)
 ```
-    cd "VideoProcessor.Lambda/test/VideoProcessor.Lambda.Tests"
-    dotnet test
+    dotnet test tests/VideoProcessor.Tests.Unit
 ```
 
-Deploy function to AWS Lambda
+Deploy function to AWS Lambda (from repository root)
 ```
-    cd "VideoProcessor.Lambda/src/VideoProcessor.Lambda"
-    dotnet lambda deploy-function
+    dotnet lambda deploy-function --project src/InterfacesExternas/VideoProcessor.Lambda
 ```

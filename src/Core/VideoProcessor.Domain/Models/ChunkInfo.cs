@@ -3,5 +3,6 @@ namespace VideoProcessor.Domain.Models;
 public record ChunkInfo(
     string ChunkId,
     double StartSec,
-    double EndSec
+    double EndSec,
+    int IntervalSec = 1
 );

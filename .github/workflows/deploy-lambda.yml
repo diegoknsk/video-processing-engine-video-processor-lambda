@@ -2,7 +2,7 @@ name: Deploy Lambda
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   workflow_dispatch:
 
 jobs:
@@ -28,6 +28,7 @@ jobs:
 
   deploy:
     needs: build-and-test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     env:
       LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME || 'video-processor-chunk-worker' }}
@@ -53,7 +54,7 @@ jobs:
         run: |
           export PATH="$PATH:$HOME/.dotnet/tools"
           mkdir -p artifacts
-          dotnet lambda package -o artifacts/VideoProcessor.zip -c Release -pl src/VideoProcessor.Lambda
+          dotnet lambda package -o artifacts/VideoProcessor.zip -c Release -pl src/InterfacesExternas/VideoProcessor.Lambda
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -63,13 +64,24 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Update Lambda function
+      - name: Update Lambda function code
         run: |
           aws lambda update-function-code \
             --function-name "${{ env.LAMBDA_FUNCTION_NAME }}" \
             --zip-file fileb://artifacts/VideoProcessor.zip
 
-      - name: Wait for Lambda update
+      - name: Wait for code update
+        run: |
+          aws lambda wait function-updated \
+            --function-name "${{ env.LAMBDA_FUNCTION_NAME }}"
+
+      - name: Set Lambda handler
+        run: |
+          aws lambda update-function-configuration \
+            --function-name "${{ env.LAMBDA_FUNCTION_NAME }}" \
+            --handler "VideoProcessor.Lambda::VideoProcessor.Lambda.Function::FunctionHandler"
+
+      - name: Wait for configuration update
         run: |
           aws lambda wait function-updated \
             --function-name "${{ env.LAMBDA_FUNCTION_NAME }}"

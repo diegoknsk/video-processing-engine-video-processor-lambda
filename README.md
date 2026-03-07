@@ -24,14 +24,13 @@ dotnet test
 Com AWS Lambda Tools instalado (`dotnet tool install -g Amazon.Lambda.Tools`):
 
 ```bash
-cd src/VideoProcessor.Lambda
-dotnet lambda package -o ../../artifacts/VideoProcessor.zip
+dotnet lambda package -o artifacts/VideoProcessor.zip -c Release -pl src/InterfacesExternas/VideoProcessor.Lambda
 ```
 
 Alternativa (sem Lambda Tools):
 
 ```bash
-dotnet publish src/VideoProcessor.Lambda -c Release -o publish
+dotnet publish src/InterfacesExternas/VideoProcessor.Lambda -c Release -o publish
 cd publish && zip -r ../artifacts/VideoProcessor.zip .
 ```
 
@@ -39,98 +38,90 @@ cd publish && zip -r ../artifacts/VideoProcessor.zip .
 
 | Projeto | Descrição |
 |---------|-----------|
-| `src/VideoProcessor.Domain` | Entidades e ports (camada de domínio) |
-| `src/VideoProcessor.Application` | Use cases e regras de negócio |
-| `src/VideoProcessor.Infra` | Implementações (S3, etc.) |
-| `src/VideoProcessor.Lambda` | Handler Lambda e bootstrap de DI |
+| `src/Core/VideoProcessor.Domain` | Entidades e ports (camada de domínio) |
+| `src/Core/VideoProcessor.Application` | Use cases e regras de negócio |
+| `src/Infra/VideoProcessor.Infra` | Implementações (S3, etc.) |
+| `src/InterfacesExternas/VideoProcessor.Lambda` | Handler Lambda e bootstrap de DI |
+| `src/InterfacesExternas/VideoProcessor.CLI` | Aplicação console para processamento local de vídeo (extração de frames) |
 | `tests/VideoProcessor.Tests.Unit` | Testes unitários (xUnit) |
 | `tests/VideoProcessor.Tests.Bdd` | Testes BDD (SpecFlow + xUnit) |
 
-## Como Invocar Lambda Manualmente
+## Processamento Local de Vídeo
 
-Para testar e validar o Lambda após o deploy, você pode invocá-lo manualmente de duas formas:
+É possível testar a extração de frames localmente (Windows) antes de rodar no Lambda.
 
-### 1. Via Console AWS
+### Pré-requisitos
 
-1. Acesse o [AWS Console](https://console.aws.amazon.com/) → **Lambda** → **Functions**
-2. Selecione a função `video-processor-chunk-worker`
-3. Clique na aba **Test**
-4. Crie um novo test event com o payload de `tests/payloads/hello-world-test.json`
-5. Clique em **Test** e valide a resposta
+- .NET 10 SDK
+- FFmpeg: na primeira execução da CLI, o binário é baixado automaticamente para `%USERPROFILE%\.ffmpeg` (via Xabe.FFmpeg.Downloader). Alternativamente, instale o FFmpeg manualmente e configure o `PATH` ou o caminho dos executáveis.
 
-**Resposta esperada:**
-```json
-{
-  "message": "Hello World from Video Processor Lambda",
-  "version": "1.0.0",
-  "timestamp": "2026-02-15T17:14:00.0000000Z",
-  "environment": "dev"
-}
+### Como executar
+
+```bash
+dotnet run --project src/VideoProcessor.CLI -- --video sample.mp4 --interval 20 --output output/frames
 ```
 
-### 2. Via AWS CLI
+- `--video`: caminho do arquivo de vídeo (ex.: `sample.mp4`)
+- `--interval`: intervalo em segundos entre cada frame (ex.: 20 = um frame a cada 20 s)
+- `--output`: pasta onde os frames serão salvos (ex.: `output/frames`)
+- `--start` (opcional): tempo de início do trecho em segundos
+- `--end` (opcional): tempo de fim do trecho em segundos. Quando informados, apenas o trecho [start, end] é processado.
+
+Exemplo para processar apenas o primeiro minuto (0s a 59s) e depois o segundo minuto (60s a 119s) em um vídeo longo:
+
+```bash
+dotnet run --project src/VideoProcessor.CLI -- --video sample.mp4 --interval 20 --output out/ --start 0 --end 59
+dotnet run --project src/VideoProcessor.CLI -- --video sample.mp4 --interval 20 --output out/ --start 60 --end 119
+```
+
+Os frames são gerados com nomes determinísticos: `frame_0001_0s.jpg`, `frame_0002_20s.jpg`, etc. A mesma duração e o mesmo intervalo sempre geram a mesma quantidade de frames.
+
+## Como Invocar Lambda Manualmente
+
+Para testar e validar o Lambda após o deploy, use um payload `ChunkProcessorInput` válido (videoId, chunk, bucket, etc.). Exemplos em [docs/payload-examples.md](docs/payload-examples.md).
+
+### Via AWS CLI
 
 ```bash
 aws lambda invoke \
   --function-name video-processor-chunk-worker \
-  --payload '{}' \
+  --payload file://payloads/chunk-input.json \
   --cli-binary-format raw-in-base64-out \
   response.json
 
 cat response.json
 ```
 
-**Para mais detalhes**, consulte o [Guia de Invocação](docs/INVOCATION_GUIDE.md) com:
-- Passo-a-passo completo (Console + CLI)
-- Como verificar logs no CloudWatch
-- Troubleshooting comum
-- Screenshots e exemplos
+**Para mais detalhes**, consulte o [Guia de Invocação](docs/INVOCATION_GUIDE.md) e [Exemplos de payload](docs/payload-examples.md).
 
 ## CI/CD e Deploy
 
-### Secrets necessários
+O workflow `.github/workflows/deploy-lambda.yml` faz build, testes e deploy da Lambda de processamento de chunks (Story 09).
 
-Configure os seguintes secrets no GitHub (Settings → Secrets and variables → Actions):
+### Estratégia de branches
 
-| Secret | Descrição |
-|--------|-----------|
-| `AWS_ACCESS_KEY_ID` | Access Key da conta AWS |
-| `AWS_SECRET_ACCESS_KEY` | Secret Key da conta AWS |
-| `AWS_SESSION_TOKEN` | Session Token (obrigatório para credenciais temporárias do AWS Academy) |
-| `AWS_REGION` | Região AWS (ex.: `us-east-1`) |
+- **main** e **dev** → deploy automático para a **mesma** função Lambda (variável `LAMBDA_FUNCTION_NAME`, padrão: `video-processor-chunk-worker`).
 
-### Como disparar o pipeline
+Push em outras branches executa apenas build e testes (sem deploy).
 
-O workflow `.github/workflows/deploy-lambda.yml` é executado automaticamente em **push** para as branches `main` ou `dev`.
+### Secrets e variáveis
 
-### Como validar o deploy manualmente
+Configure no GitHub (Settings → Secrets and variables → Actions):
 
-Após o pipeline concluir, execute o script de validação:
+**Secrets:** `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION`.
 
-```bash
-bash scripts/validate-deployment.sh \
-  --state-machine-arn arn:aws:states:us-east-1:123456789012:stateMachine:VideoProcessorStateMachine \
-  --execution-name manual-test-$(date +%s) \
-  --payload-file test-payloads/smoke-payload.json \
-  --output-bucket video-processing-output \
-  --output-prefix manifests/test-video-123/chunk-0/
-```
+**Variables (opcional):** `LAMBDA_FUNCTION_NAME`. Se não definida, usa-se `video-processor-chunk-worker`.
 
-Substitua `--state-machine-arn` e `--output-bucket` pelos valores reais da sua conta AWS.
+### FFmpeg na Lambda
 
-### Renovar credenciais AWS Academy
+A função usa FFmpeg (Xabe.FFmpeg). O deploy **não** empacota o binário; é necessário anexar um **Lambda Layer** com FFmpeg à função ou configurar a variável `FFMPEG_PATH`. Detalhes em [docs/deploy-lambda-video-processor.md](docs/deploy-lambda-video-processor.md).
 
-Credenciais temporárias do AWS Academy expiram. Para renovar:
+### Checklist pós-deploy
 
-1. Acesse o AWS Academy e gere novas credenciais temporárias
-2. Atualize os secrets `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` e `AWS_SESSION_TOKEN` no GitHub
-3. O próximo push disparará o pipeline com as novas credenciais
+- [ ] Pipeline concluído com sucesso (build, test, deploy)
+- [ ] Função atualizada na AWS (Last modified)
+- [ ] Handler: `VideoProcessor.Lambda::VideoProcessor.Lambda.Function::FunctionHandler`
+- [ ] Invocação com payload `ChunkProcessorInput` retorna resposta coerente com `ChunkProcessorOutput`
+- [ ] Logs no CloudWatch sem erro de FFmpeg (se o layer estiver configurado)
 
-### Checklist de validação pós-deploy
-
-- [ ] Pipeline GitHub Actions concluído com sucesso
-- [ ] Script de validação retornou exit code 0
-- [ ] Artefatos `manifest.json` e `done.json` presentes no S3
-- [ ] Logs visíveis no CloudWatch com videoId/chunkId esperados
-
-Evidências devem ser salvas em `docs/deploy-validation/` (ver [docs/deploy-validation/README.md](docs/deploy-validation/README.md)).
+Documentação completa do deploy, variáveis e checklist: [docs/deploy-lambda-video-processor.md](docs/deploy-lambda-video-processor.md).

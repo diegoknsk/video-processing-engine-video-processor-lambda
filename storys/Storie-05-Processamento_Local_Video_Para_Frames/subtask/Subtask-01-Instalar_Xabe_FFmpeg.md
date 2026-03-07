@@ -1,9 +1,7 @@
 # Subtask 01: Instalar Xabe.FFmpeg e configurar FFmpeg localmente
 
 ## Status
-- [ ] Não iniciado
-- [ ] Em progresso
-- [ ] Concluído
+- [x] Concluído
 
 ## Descrição
 Instalar pacote NuGet Xabe.FFmpeg no projeto Application, baixar binários FFmpeg para ambiente Windows local, e validar que FFmpeg está funcional.

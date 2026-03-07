@@ -114,7 +114,7 @@ dotnet new sln -n VideoProcessor
 ```bash
 # Seguir passos na subtask
 # Instalar pacotes
-cd src/VideoProcessor.Lambda
+cd src/InterfacesExternas/VideoProcessor.Lambda
 dotnet add package Amazon.Lambda.Core --version 2.3.0
 ...
 ```
@@ -182,7 +182,7 @@ dotnet test --collect:"XPlat Code Coverage"
 dotnet new console -n VideoProcessor.LocalTest
 
 # Adicionar referência ao Lambda
-dotnet add reference ../src/VideoProcessor.Lambda
+dotnet add reference ../src/InterfacesExternas/VideoProcessor.Lambda
 
 # Implementar teste (ver exemplos nas subtasks)
 ```
