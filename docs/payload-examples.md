@@ -60,6 +60,12 @@ dotnet run --project src/InterfacesExternas/VideoProcessor.CLI -- \
   --target-prefix "processed/video-abc123/chunk-001/frames/"
 ```
 
+**Exemplo pronto para teste (ambiente dev)** — mesmo contrato que o payload Lambda abaixo:
+
+```bash
+dotnet run --project src/InterfacesExternas/VideoProcessor.CLI -- --mode aws --video-id "860e4513-e3e7-40e2-8a03-2381c45f3530" --chunk-id "chunk-001" --interval 2 --start 0 --end 20 --source-bucket "video-processing-engine-dev-videos" --source-key "videos/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/original" --target-bucket "video-processing-engine-dev-images" --target-prefix "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/"
+```
+
 **Exemplo com buckets dev (video-processing-engine):** ver `docs/testelocalCli.md`.
 
 **Resultado esperado no console:**
@@ -79,7 +85,9 @@ aws s3 ls s3://video-processed-frames/processed/video-abc123/chunk-001/frames/
 
 ## 4. Payload de Input da Lambda (ChunkProcessorInput)
 
-Payload JSON enviado ao handler da Lambda (ex.: pelo Step Functions Map State):
+Payload JSON enviado ao handler da Lambda (ex.: pelo Step Functions Map State).
+
+### Exemplo genérico
 
 ```json
 {
@@ -102,6 +110,33 @@ Payload JSON enviado ao handler da Lambda (ex.: pelo Step Functions Map State):
     "framesPrefix": "processed/video-abc123/chunk-001/frames/"
   },
   "executionArn": "arn:aws:states:us-east-1:123456789012:execution:VideoProcessing:exec-001"
+}
+```
+
+### Exemplo pronto para teste (ambiente dev)
+
+Use este payload no Lambda Test Tool ou em `aws lambda invoke --payload file://test-payload.json`. Equivalente em CLI no final da seção 3.
+
+```json
+{
+  "contractVersion": "1.0",
+  "videoId": "860e4513-e3e7-40e2-8a03-2381c45f3530",
+  "chunk": {
+    "chunkId": "chunk-001",
+    "startSec": 0.0,
+    "endSec": 20.0,
+    "intervalSec": 2
+  },
+  "source": {
+    "bucket": "video-processing-engine-dev-videos",
+    "key": "videos/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/original"
+  },
+  "output": {
+    "manifestBucket": "video-processing-engine-dev-images",
+    "manifestPrefix": "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/",
+    "framesBucket": "video-processing-engine-dev-images",
+    "framesPrefix": "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/"
+  }
 }
 ```
 

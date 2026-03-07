@@ -92,3 +92,42 @@ aws s3 ls s3://video-processing-engine-dev-images/processed/860e4513-e3e7-40e2-8
 - **Modo AWS:** bucket e **key exata** do objeto; conferir com `aws s3 ls ... --recursive` quando der “vídeo não encontrado”.
 
 Mais exemplos e payloads da Lambda: `docs/payload-examples.md`.
+
+---
+
+## Exemplo pronto para copiar (Lambda + CLI)
+
+Use para testar rápido no **Lambda Test Tool** ou com **aws lambda invoke**, e o comando equivalente no **CLI**.
+
+### Payload Lambda (JSON)
+
+```json
+{
+  "contractVersion": "1.0",
+  "videoId": "860e4513-e3e7-40e2-8a03-2381c45f3530",
+  "chunk": {
+    "chunkId": "chunk-001",
+    "startSec": 0.0,
+    "endSec": 20.0,
+    "intervalSec": 2
+  },
+  "source": {
+    "bucket": "video-processing-engine-dev-videos",
+    "key": "videos/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/original"
+  },
+  "output": {
+    "manifestBucket": "video-processing-engine-dev-images",
+    "manifestPrefix": "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/",
+    "framesBucket": "video-processing-engine-dev-images",
+    "framesPrefix": "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/"
+  }
+}
+```
+
+### Comando CLI equivalente
+
+```bash
+dotnet run --project src/InterfacesExternas/VideoProcessor.CLI -- --mode aws --video-id "860e4513-e3e7-40e2-8a03-2381c45f3530" --chunk-id "chunk-001" --interval 2 --start 0 --end 20 --source-bucket "video-processing-engine-dev-videos" --source-key "videos/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/original" --target-bucket "video-processing-engine-dev-images" --target-prefix "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/"
+```
+
+*Nota:* no payload acima o chunk de saída é `chunk-004`; no CLI você pode trocar `--chunk-id` e `--target-prefix` para outro chunk (ex.: `chunk-001`) conforme o teste.
