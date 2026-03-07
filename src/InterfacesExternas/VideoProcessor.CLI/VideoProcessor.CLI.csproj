@@ -10,6 +10,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\VideoProcessor.Application\VideoProcessor.Application.csproj" />
     <ProjectReference Include="..\..\Core\VideoProcessor.Domain\VideoProcessor.Domain.csproj" />
+    <ProjectReference Include="..\..\Infra\VideoProcessor.Infra\VideoProcessor.Infra.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="4.0.18.7" />
   </ItemGroup>
 
 </Project>
