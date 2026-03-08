@@ -1,0 +1,20 @@
+{
+  "contractVersion": "1.0",
+  "videoId": "860e4513-e3e7-40e2-8a03-2381c45f3530",
+  "chunk": {
+    "chunkId": "chunk-001",
+    "startSec": 0.0,
+    "endSec": 20.0,
+    "intervalSec": 2
+  },
+  "source": {
+    "bucket": "video-processing-engine-dev-videos",
+    "key": "videos/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/original"
+  },
+  "output": {
+    "manifestBucket": "video-processing-engine-dev-images",
+    "manifestPrefix": "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/",
+    "framesBucket": "video-processing-engine-dev-images",
+    "framesPrefix": "processed/34e88498-3031-7041-d464-584dc2c71918/860e4513-e3e7-40e2-8a03-2381c45f3530/chunk-004/frames/"
+  }
+}
