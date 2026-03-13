@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Moq;
 using VideoProcessor.Application.UseCases;
+using VideoProcessor.Domain.Exceptions;
 using VideoProcessor.Domain.Models;
 using VideoProcessor.Domain.Ports;
 using VideoProcessor.Domain.Services;
@@ -114,6 +115,33 @@ public class ProcessChunkUseCaseTests
         result.Error.Should().NotBeNull();
         result.Error!.Type.Should().Be("EXTRACTION_FAILED");
         result.Error.Message.Should().Contain("FFmpeg error");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ExtractorThrowsVideoDurationSimulationException_PropagatesWithoutCatching()
+    {
+        // Arrange
+        var storageMock = new Mock<IS3VideoStorage>();
+        storageMock
+            .Setup(x => x.DownloadToTempAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string _, string _, string path, CancellationToken _) => path);
+
+        var simulationException = new VideoDurationSimulationException(1303.0);
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        extractorMock
+            .Setup(x => x.ExtractFramesAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>()))
+            .ThrowsAsync(simulationException);
+
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        var input = ValidInput();
+
+        // Act
+        var act = () => sut.ExecuteAsync(input);
+
+        // Assert — não capturada como FAILED, propaga até o caller (Lambda handler)
+        await act.Should().ThrowAsync<VideoDurationSimulationException>()
+            .WithMessage("*SIMULAÇÃO*")
+            .Where(ex => (int)ex.DurationSeconds == VideoDurationSimulationException.TriggerDurationSeconds);
     }
 
     [Fact]

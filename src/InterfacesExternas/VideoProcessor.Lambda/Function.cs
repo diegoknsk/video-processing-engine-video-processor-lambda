@@ -4,6 +4,7 @@ using Amazon.S3;
 using Microsoft.Extensions.DependencyInjection;
 using VideoProcessor.Application.Services;
 using VideoProcessor.Application.UseCases;
+using VideoProcessor.Domain.Exceptions;
 using VideoProcessor.Domain.Models;
 using VideoProcessor.Domain.Ports;
 using VideoProcessor.Domain.Services;
@@ -32,6 +33,15 @@ public class Function
         _useCase = sp.GetRequiredService<ProcessChunkUseCase>();
     }
 
+    /// <summary>
+    /// Construtor para testes — injeta o UseCase diretamente e ignora o setup de FFmpeg.
+    /// </summary>
+    internal Function(ProcessChunkUseCase useCase)
+    {
+        _useCase = useCase;
+        _ffmpegEnsured = true;
+    }
+
     public async Task<string> FunctionHandler(ChunkProcessorInput input, ILambdaContext context)
     {
         TrySetFfmpegPathFromEnvOrKnownPaths();
@@ -48,15 +58,27 @@ public class Function
         var ct = context.RemainingTime > TimeSpan.FromSeconds(30)
             ? new CancellationTokenSource(context.RemainingTime).Token
             : CancellationToken.None;
-        var output = await _useCase.ExecuteAsync(input, ct);
 
-        context.Logger.LogInformation("Processamento concluído. Status={Status} Frames={Frames}",
-            output.Status, output.FramesCount);
-
-        return JsonSerializer.Serialize(output, new JsonSerializerOptions
+        try
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+            var output = await _useCase.ExecuteAsync(input, ct);
+
+            context.Logger.LogInformation("Processamento concluído. Status={Status} Frames={Frames}",
+                output.Status, output.FramesCount);
+
+            return JsonSerializer.Serialize(output, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+        }
+        catch (VideoDurationSimulationException ex)
+        {
+            context.Logger.LogError(
+                "[SIMULAÇÃO] VideoDurationSimulationException propagada até o Lambda handler. " +
+                "VideoId={VideoId} ChunkId={ChunkId} DurationSeconds={DurationSeconds} Message={Message}",
+                input.VideoId, input.Chunk.ChunkId, ex.DurationSeconds, ex.Message);
+            throw;
+        }
     }
 
     private static void TrySetFfmpegPathFromEnvOrKnownPaths()
