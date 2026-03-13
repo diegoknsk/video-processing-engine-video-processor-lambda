@@ -31,6 +31,7 @@
     <ProjectReference Include="..\..\src\Core\VideoProcessor.Domain\VideoProcessor.Domain.csproj" />
     <ProjectReference Include="..\..\src\Core\VideoProcessor.Application\VideoProcessor.Application.csproj" />
     <ProjectReference Include="..\..\src\Infra\VideoProcessor.Infra\VideoProcessor.Infra.csproj" />
+    <ProjectReference Include="..\..\src\InterfacesExternas\VideoProcessor.Lambda\VideoProcessor.Lambda.csproj" />
   </ItemGroup>
 
 </Project>

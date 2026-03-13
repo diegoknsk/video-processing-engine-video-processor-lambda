@@ -141,6 +141,30 @@ public class VideoFrameExtractorTests
         }
     }
 
+    [Fact]
+    public void ThrowIfSimulationDuration_WhenDurationIs1303_ThrowsVideoDurationSimulationException()
+    {
+        var act = () => VideoFrameExtractor.ThrowIfSimulationDuration(
+            VideoDurationSimulationException.TriggerDurationSeconds, 1303.0);
+
+        act.Should().Throw<VideoDurationSimulationException>()
+            .WithMessage("*SIMULAÇÃO*")
+            .Where(ex => (int)ex.DurationSeconds == VideoDurationSimulationException.TriggerDurationSeconds);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(60)]
+    [InlineData(1302)]
+    [InlineData(1304)]
+    [InlineData(9999)]
+    public void ThrowIfSimulationDuration_WhenDurationIsNot1303_DoesNotThrow(int duration)
+    {
+        var act = () => VideoFrameExtractor.ThrowIfSimulationDuration(duration, (double)duration);
+
+        act.Should().NotThrow();
+    }
+
     [Fact(Skip = "Requer arquivo de vídeo real com exatamente 1303 segundos; executar manualmente com sample-1303s.mp4 na raiz do projeto.")]
     public async Task ExtractFramesAsync_VideoWithExactly1303Seconds_ThrowsVideoDurationSimulationException()
     {

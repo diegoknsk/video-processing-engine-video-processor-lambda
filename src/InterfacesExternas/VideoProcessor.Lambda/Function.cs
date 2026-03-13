@@ -33,6 +33,15 @@ public class Function
         _useCase = sp.GetRequiredService<ProcessChunkUseCase>();
     }
 
+    /// <summary>
+    /// Construtor para testes — injeta o UseCase diretamente e ignora o setup de FFmpeg.
+    /// </summary>
+    internal Function(ProcessChunkUseCase useCase)
+    {
+        _useCase = useCase;
+        _ffmpegEnsured = true;
+    }
+
     public async Task<string> FunctionHandler(ChunkProcessorInput input, ILambdaContext context)
     {
         TrySetFfmpegPathFromEnvOrKnownPaths();
