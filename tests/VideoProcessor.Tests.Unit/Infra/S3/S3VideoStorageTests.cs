@@ -125,4 +125,50 @@ public class S3VideoStorageTests
             if (Directory.Exists(tempDir)) Directory.Delete(tempDir, recursive: true);
         }
     }
+
+    [Fact]
+    public async Task UploadFramesAsync_WithEmptyPrefix_ReturnsJustFileName()
+    {
+        // Cobre o branch !string.IsNullOrEmpty(prefixNormalized) == false (prefix vazio)
+        var s3Mock = new Mock<IAmazonS3>();
+        s3Mock
+            .Setup(x => x.PutObjectAsync(It.IsAny<PutObjectRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PutObjectResponse());
+
+        var tempDir = Path.Combine(Path.GetTempPath(), "S3VideoStorageTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(tempDir);
+        var framePath = Path.Combine(tempDir, "frame_0001_0s.jpg");
+        await File.WriteAllTextAsync(framePath, "x");
+
+        try
+        {
+            var sut = new S3VideoStorage(s3Mock.Object);
+            var result = await sut.UploadFramesAsync("bucket", "", [framePath]);
+
+            result.Should().ContainSingle();
+            result[0].Should().Be("frame_0001_0s.jpg");
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir)) Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task DownloadToTempAsync_WhenS3ReturnsForbidden_PropagatesOriginalAmazonS3Exception()
+    {
+        // Cobre o caminho onde AmazonS3Exception com status != 404 não é capturada pelo filtro when
+        var s3Mock = new Mock<IAmazonS3>();
+        s3Mock
+            .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("Access Denied") { StatusCode = System.Net.HttpStatusCode.Forbidden });
+
+        var sut = new S3VideoStorage(s3Mock.Object);
+        var tempPath = Path.Combine(Path.GetTempPath(), "S3VideoStorageTests", Guid.NewGuid().ToString("N"), "video.mp4");
+
+        var act = () => sut.DownloadToTempAsync("bucket", "key", tempPath);
+
+        await act.Should().ThrowAsync<AmazonS3Exception>()
+            .WithMessage("*Access Denied*");
+    }
 }

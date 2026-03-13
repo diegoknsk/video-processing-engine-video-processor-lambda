@@ -165,6 +165,28 @@ public class VideoFrameExtractorTests
         act.Should().NotThrow();
     }
 
+    [Fact]
+    public async Task ExtractFramesAsync_WhenFileExistsButIsNotValidVideo_ThrowsInvalidOperationException()
+    {
+        // Arrange — cria arquivo vazio existente (não é um vídeo válido)
+        var videoPath = Path.GetTempFileName();
+        var outputFolder = Path.Combine(Path.GetTempPath(), "frames-" + Guid.NewGuid().ToString("N")[..8]);
+        try
+        {
+            // Act — FFmpeg não consegue ler info do arquivo vazio → catch → InvalidOperationException
+            var act = () => _sut.ExtractFramesAsync(videoPath, 1, outputFolder);
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*Não foi possível obter informações*");
+        }
+        finally
+        {
+            if (File.Exists(videoPath)) File.Delete(videoPath);
+            if (Directory.Exists(outputFolder)) Directory.Delete(outputFolder, recursive: true);
+        }
+    }
+
     [Fact(Skip = "Requer arquivo de vídeo real com exatamente 1303 segundos; executar manualmente com sample-1303s.mp4 na raiz do projeto.")]
     public async Task ExtractFramesAsync_VideoWithExactly1303Seconds_ThrowsVideoDurationSimulationException()
     {
