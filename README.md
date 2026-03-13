@@ -1,5 +1,8 @@
 # Video Processor Lambda
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=diegoknsk_video-processing-engine-video-processor-lambda&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=diegoknsk_video-processing-engine-video-processor-lambda)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=diegoknsk_video-processing-engine-video-processor-lambda&metric=coverage)](https://sonarcloud.io/summary/new_code?id=diegoknsk_video-processing-engine-video-processor-lambda)
+
 Lambda Worker para processar chunks individuais de vídeo no pipeline da Step Functions. Projeto minimalista com handler puro em .NET 10 (sem AddAWSLambdaHosting).
 
 ## Pré-requisitos
@@ -106,11 +109,18 @@ Push em outras branches executa apenas build e testes (sem deploy).
 
 ### Secrets e variáveis
 
-Configure no GitHub (Settings → Secrets and variables → Actions):
+Configure no GitHub em **Settings → Secrets and variables → Actions**:
 
-**Secrets:** `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AWS_REGION`.
+| Tipo     | Nome                  | Obrigatório | Descrição |
+|----------|------------------------|-------------|-----------|
+| **Secret** | `AWS_ACCESS_KEY_ID`    | Sim (deploy) | Credencial AWS |
+| **Secret** | `AWS_SECRET_ACCESS_KEY`| Sim (deploy) | Credencial AWS |
+| **Secret** | `AWS_SESSION_TOKEN`   | Sim (deploy) | Token de sessão AWS |
+| **Secret** | `AWS_REGION`           | Sim (deploy) | Região AWS (ex.: `us-east-1`) |
+| **Secret** | `SONAR_TOKEN`          | Sim (SonarCloud) | Token em [sonarcloud.io/account/security](https://sonarcloud.io/account/security) para análise no PR/main |
+| **Variable** | `LAMBDA_FUNCTION_NAME` | Não | Nome da função Lambda; padrão: `video-processor-chunk-worker` |
 
-**Variables (opcional):** `LAMBDA_FUNCTION_NAME`. Se não definida, usa-se `video-processor-chunk-worker`.
+SonarCloud usa projeto fixo `diegoknsk_video-processing-engine-video-processor-lambda` e organização `diegoknsk` no workflow; não é necessário configurar variables para isso.
 
 ### FFmpeg na Lambda
 
