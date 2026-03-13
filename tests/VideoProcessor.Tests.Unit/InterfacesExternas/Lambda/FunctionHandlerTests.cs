@@ -102,4 +102,63 @@ public class FunctionHandlerTests
             x => x.LogInformation(It.Is<string>(msg => msg.Contains("concluído")), It.IsAny<object[]>()),
             Times.Once);
     }
+
+    [Fact]
+    public async Task FunctionHandler_WhenFfmpegPathEnvVarSetToNonExistentDir_StillProcessesSuccessfully()
+    {
+        // Arrange — cobre o branch !string.IsNullOrWhiteSpace(envPath) em TrySetFfmpegPathFromEnvOrKnownPaths
+        var prev = Environment.GetEnvironmentVariable("FFMPEG_PATH");
+        Environment.SetEnvironmentVariable("FFMPEG_PATH", "/non/existent/path/xyz-" + Guid.NewGuid().ToString("N")[..8]);
+        try
+        {
+            var sut = BuildSuccessSut(out var loggerMock);
+            var context = Mock.Of<ILambdaContext>(ctx =>
+                ctx.Logger == loggerMock.Object &&
+                ctx.RemainingTime == TimeSpan.Zero);
+
+            // Act
+            var result = await sut.FunctionHandler(ValidInput(), context);
+
+            // Assert — mesmo com FFMPEG_PATH inválido, o handler processa normalmente
+            result.Should().Contain("SUCCEEDED");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("FFMPEG_PATH", prev);
+        }
+    }
+
+    [Fact]
+    public async Task FunctionHandler_WhenFfmpegBinariesExistInEnvPath_ConfiguresPathAndSucceeds()
+    {
+        // Arrange — cobre File.Exists path, FFmpeg.SetExecutablesPath e IsFfmpegConfigured retornando true
+        var tempDir = Path.Combine(Path.GetTempPath(), "ffmpeg-test-" + Guid.NewGuid().ToString("N")[..8]);
+        Directory.CreateDirectory(tempDir);
+
+        var ffmpegName = OperatingSystem.IsWindows() ? "ffmpeg.exe" : "ffmpeg";
+        var ffprobeName = OperatingSystem.IsWindows() ? "ffprobe.exe" : "ffprobe";
+        await File.WriteAllTextAsync(Path.Combine(tempDir, ffmpegName), "fake-binary");
+        await File.WriteAllTextAsync(Path.Combine(tempDir, ffprobeName), "fake-binary");
+
+        var prev = Environment.GetEnvironmentVariable("FFMPEG_PATH");
+        Environment.SetEnvironmentVariable("FFMPEG_PATH", tempDir);
+        try
+        {
+            var sut = BuildSuccessSut(out var loggerMock);
+            var context = Mock.Of<ILambdaContext>(ctx =>
+                ctx.Logger == loggerMock.Object &&
+                ctx.RemainingTime == TimeSpan.Zero);
+
+            // Act
+            var result = await sut.FunctionHandler(ValidInput(), context);
+
+            // Assert — path configurado a partir de FFMPEG_PATH, processamento com sucesso
+            result.Should().Contain("SUCCEEDED");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("FFMPEG_PATH", prev);
+            if (Directory.Exists(tempDir)) Directory.Delete(tempDir, recursive: true);
+        }
+    }
 }
