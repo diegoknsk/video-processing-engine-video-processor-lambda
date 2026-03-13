@@ -160,4 +160,128 @@ public class ProcessChunkUseCaseTests
         result.Error!.Message.Should().Contain("obrigatórios");
         storageMock.VerifyNoOtherCalls();
     }
+
+    [Fact]
+    public async Task ExecuteAsync_InvalidInputEmptyKey_ReturnsFailed()
+    {
+        // Cobre a condição string.IsNullOrWhiteSpace(source.Key)
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        var storageMock = new Mock<IS3VideoStorage>();
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        var input = ValidInput() with { Source = new SourceInfo("bucket", "") };
+
+        var result = await sut.ExecuteAsync(input);
+
+        result.Status.Should().Be(ProcessingStatus.FAILED);
+        result.Error!.Type.Should().Be("INVALID_INPUT");
+        storageMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenFramesBucketAndManifestBucketAreNull_ReturnsFailed()
+    {
+        // Cobre a condição string.IsNullOrWhiteSpace(framesBucket)
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        var storageMock = new Mock<IS3VideoStorage>();
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        var input = ValidInput() with
+        {
+            Output = new OutputConfig(ManifestBucket: null!, ManifestPrefix: "prefix/", FramesBucket: null, FramesPrefix: "frames/")
+            // ManifestBucket=null força framesBucket a ser null (ambos null)
+        };
+
+        var result = await sut.ExecuteAsync(input);
+
+        result.Status.Should().Be(ProcessingStatus.FAILED);
+        result.Error!.Type.Should().Be("INVALID_INPUT");
+        storageMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenFramesPrefixAndManifestPrefixAreEmpty_ReturnsFailed()
+    {
+        // Cobre a condição string.IsNullOrWhiteSpace(framesPrefix)
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        var storageMock = new Mock<IS3VideoStorage>();
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        var input = ValidInput() with
+        {
+            Output = new OutputConfig("bucket-out", ManifestPrefix: null!, FramesBucket: "bucket-out", FramesPrefix: null)
+            // ManifestPrefix=null! e FramesPrefix=null → framesPrefix = "" → validação falha
+        };
+
+        var result = await sut.ExecuteAsync(input);
+
+        result.Status.Should().Be(ProcessingStatus.FAILED);
+        result.Error!.Type.Should().Be("INVALID_INPUT");
+        storageMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenManifestPrefixHasNoTrailingSlash_NormalizesKeyWithSlash()
+    {
+        // Cobre o branch de normalização do manifestPrefix (linha: manifestPrefix += "/")
+        var framePaths = new List<string> { "/tmp/f1.jpg" };
+        var extractResult = new FrameExtractionResult(1, framePaths, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1));
+
+        var storageMock = new Mock<IS3VideoStorage>();
+        storageMock
+            .Setup(x => x.DownloadToTempAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string _, string _, string path, CancellationToken _) => path);
+        storageMock
+            .Setup(x => x.UploadFramesAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(["frames/f1.jpg"]);
+
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        extractorMock
+            .Setup(x => x.ExtractFramesAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>()))
+            .ReturnsAsync(extractResult);
+
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        // ManifestPrefix sem trailing slash — deve ser normalizado para "manifests/manifest.json"
+        var input = ValidInput() with
+        {
+            Output = new OutputConfig("bucket-out", ManifestPrefix: "manifests", FramesBucket: "bucket-out", FramesPrefix: "frames/")
+        };
+
+        var result = await sut.ExecuteAsync(input);
+
+        result.Status.Should().Be(ProcessingStatus.SUCCEEDED);
+        result.Manifest.Should().NotBeNull();
+        result.Manifest!.Key.Should().Be("manifests/manifest.json");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenManifestPrefixIsNull_UsesEmptyPrefix()
+    {
+        // Cobre o branch where manifestPrefix is empty (sem normalização)
+        var framePaths = new List<string> { "/tmp/f1.jpg" };
+        var extractResult = new FrameExtractionResult(1, framePaths, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1));
+
+        var storageMock = new Mock<IS3VideoStorage>();
+        storageMock
+            .Setup(x => x.DownloadToTempAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string _, string _, string path, CancellationToken _) => path);
+        storageMock
+            .Setup(x => x.UploadFramesAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(["frames/f1.jpg"]);
+
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        extractorMock
+            .Setup(x => x.ExtractFramesAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>()))
+            .ReturnsAsync(extractResult);
+
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        var input = ValidInput() with
+        {
+            Output = new OutputConfig("bucket-out", ManifestPrefix: null!, FramesBucket: "bucket-out", FramesPrefix: "frames/")
+            // ManifestPrefix=null → manifestKey = "manifest.json" (sem prefix)
+        };
+
+        var result = await sut.ExecuteAsync(input);
+
+        result.Status.Should().Be(ProcessingStatus.SUCCEEDED);
+        result.Manifest.Should().NotBeNull();
+        result.Manifest!.Key.Should().Be("manifest.json");
+    }
 }
