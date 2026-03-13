@@ -79,6 +79,22 @@ public class FFmpegSetupTests
     }
 
     [Fact]
+    public void GetFFmpegPath_WhenExecutablesPathIsNull_ReturnsEmpty()
+    {
+        var origPath = FFmpeg.ExecutablesPath;
+        try
+        {
+            FFmpeg.SetExecutablesPath(null!);
+
+            FFmpegSetup.GetFFmpegPath().Should().Be(string.Empty);
+        }
+        finally
+        {
+            FFmpeg.SetExecutablesPath(origPath!);
+        }
+    }
+
+    [Fact]
     public async Task EnsureFFmpegInstalledAsync_WhenFFmpegPathAlreadyConfiguredAndDirectoryExists_ReturnsWithoutDownloading()
     {
         // Arrange — aponta para um diretório existente, satisfazendo a condição de early-return

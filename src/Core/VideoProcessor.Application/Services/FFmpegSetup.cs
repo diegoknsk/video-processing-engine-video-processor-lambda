@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Xabe.FFmpeg;
 using Xabe.FFmpeg.Downloader;
 
@@ -12,11 +13,14 @@ public static class FFmpegSetup
     /// Delegate que executa o download e configuração do FFmpeg em um diretório.
     /// Exposto como internal para substituição em testes unitários sem alterar o comportamento em produção.
     /// </summary>
-    internal static Func<string, Task> DownloadFFmpegToDir { get; set; } = async dir =>
+    internal static Func<string, Task> DownloadFFmpegToDir { get; set; } = DownloadAsync;
+
+    [ExcludeFromCodeCoverage(Justification = "Chama serviço externo real (FFmpegDownloader); substituído por stub nos testes.")]
+    private static async Task DownloadAsync(string dir)
     {
         await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, dir);
         FFmpeg.SetExecutablesPath(dir);
-    };
+    }
 
     /// <summary>
     /// Garante que o FFmpeg está disponível: se já houver binários configurados, não faz nada;
