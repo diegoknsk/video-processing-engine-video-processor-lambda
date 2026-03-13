@@ -161,4 +161,37 @@ public class FunctionHandlerTests
             if (Directory.Exists(tempDir)) Directory.Delete(tempDir, recursive: true);
         }
     }
+
+    [Fact]
+    public async Task FunctionHandler_WhenFfmpegExistsButFfprobeDoesNot_ContinuesWithoutSettingPath()
+    {
+        // Cobre o branch: File.Exists(ffmpegName) = true E File.Exists(ffprobeName) = false
+        // → condição && fica false → não configura o path, continua loop
+        var tempDir = Path.Combine(Path.GetTempPath(), "ffmpeg-only-" + Guid.NewGuid().ToString("N")[..8]);
+        Directory.CreateDirectory(tempDir);
+
+        var ffmpegName = OperatingSystem.IsWindows() ? "ffmpeg.exe" : "ffmpeg";
+        await File.WriteAllTextAsync(Path.Combine(tempDir, ffmpegName), "fake-binary");
+        // ffprobe deliberadamente não criado
+
+        var prev = Environment.GetEnvironmentVariable("FFMPEG_PATH");
+        Environment.SetEnvironmentVariable("FFMPEG_PATH", tempDir);
+        try
+        {
+            var sut = BuildSuccessSut(out var loggerMock);
+            var context = Mock.Of<ILambdaContext>(ctx =>
+                ctx.Logger == loggerMock.Object &&
+                ctx.RemainingTime == TimeSpan.Zero);
+
+            // Act — mesmo sem ffprobe, o handler processa (UseCase está mockado)
+            var result = await sut.FunctionHandler(ValidInput(), context);
+
+            result.Should().Contain("SUCCEEDED");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("FFMPEG_PATH", prev);
+            if (Directory.Exists(tempDir)) Directory.Delete(tempDir, recursive: true);
+        }
+    }
 }

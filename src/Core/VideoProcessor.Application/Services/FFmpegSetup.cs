@@ -9,6 +9,16 @@ namespace VideoProcessor.Application.Services;
 public static class FFmpegSetup
 {
     /// <summary>
+    /// Delegate que executa o download e configuração do FFmpeg em um diretório.
+    /// Exposto como internal para substituição em testes unitários sem alterar o comportamento em produção.
+    /// </summary>
+    internal static Func<string, Task> DownloadFFmpegToDir { get; set; } = async dir =>
+    {
+        await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, dir);
+        FFmpeg.SetExecutablesPath(dir);
+    };
+
+    /// <summary>
     /// Garante que o FFmpeg está disponível: se já houver binários configurados, não faz nada;
     /// caso contrário, baixa para o diretório apropriado (em Lambda usa /tmp/.ffmpeg; localmente %USERPROFILE%\.ffmpeg) e configura o caminho.
     /// </summary>
@@ -22,8 +32,7 @@ public static class FFmpegSetup
             : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var ffmpegDir = Path.Combine(basePath, ".ffmpeg");
         Directory.CreateDirectory(ffmpegDir);
-        await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, ffmpegDir);
-        FFmpeg.SetExecutablesPath(ffmpegDir);
+        await DownloadFFmpegToDir(ffmpegDir);
     }
 
     /// <summary>
