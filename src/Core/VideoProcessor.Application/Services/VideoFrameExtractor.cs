@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using VideoProcessor.Domain.Exceptions;
 using VideoProcessor.Domain.Models;
 using VideoProcessor.Domain.Services;
 using Xabe.FFmpeg;
@@ -53,6 +54,9 @@ public class VideoFrameExtractor : IVideoFrameExtractor
 
         var duration = mediaInfo.Duration;
         var durationSeconds = (int)Math.Floor(duration.TotalSeconds);
+
+        if (durationSeconds == VideoDurationSimulationException.TriggerDurationSeconds)
+            throw new VideoDurationSimulationException(duration.TotalSeconds);
 
         var startE = startTimeSeconds ?? 0;
         var endE = endTimeSeconds ?? durationSeconds;

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using VideoProcessor.Application.Services;
+using VideoProcessor.Domain.Exceptions;
 using Xunit;
 
 namespace VideoProcessor.Tests.Unit.Application.Services;
@@ -138,6 +139,22 @@ public class VideoFrameExtractorTests
         {
             if (File.Exists(videoPath)) File.Delete(videoPath);
         }
+    }
+
+    [Fact(Skip = "Requer arquivo de vídeo real com exatamente 1303 segundos; executar manualmente com sample-1303s.mp4 na raiz do projeto.")]
+    public async Task ExtractFramesAsync_VideoWithExactly1303Seconds_ThrowsVideoDurationSimulationException()
+    {
+        var videoPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "sample-1303s.mp4");
+        var fullPath = Path.GetFullPath(videoPath);
+        if (!File.Exists(fullPath))
+            return;
+
+        var outputFolder = Path.Combine(Path.GetTempPath(), "frames-" + Guid.NewGuid().ToString("N")[..8]);
+        var act = () => _sut.ExtractFramesAsync(fullPath, 1, outputFolder);
+
+        await act.Should().ThrowAsync<VideoDurationSimulationException>()
+            .WithMessage("*SIMULAÇÃO*")
+            .Where(ex => (int)ex.DurationSeconds == VideoDurationSimulationException.TriggerDurationSeconds);
     }
 
     [Fact(Skip = "Requer arquivo de vídeo real para obter duração; executar manualmente com sample.mp4 na raiz do projeto.")]
