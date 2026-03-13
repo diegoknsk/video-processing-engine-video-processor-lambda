@@ -284,4 +284,72 @@ public class ProcessChunkUseCaseTests
         result.Manifest.Should().NotBeNull();
         result.Manifest!.Key.Should().Be("manifest.json");
     }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenFramesPrefixNullButManifestPrefixSet_UsesManifestPrefixAsFramesPrefix()
+    {
+        // Cobre o branch: output.FramesPrefix ?? output.ManifestPrefix onde FramesPrefix=null e ManifestPrefix tem valor
+        var framePaths = new List<string> { "/tmp/f1.jpg" };
+        var extractResult = new FrameExtractionResult(1, framePaths, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1));
+
+        var storageMock = new Mock<IS3VideoStorage>();
+        storageMock
+            .Setup(x => x.DownloadToTempAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string _, string _, string path, CancellationToken _) => path);
+        storageMock
+            .Setup(x => x.UploadFramesAsync("bucket-out", "manifests/", It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(["manifests/f1.jpg"]);
+
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        extractorMock
+            .Setup(x => x.ExtractFramesAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>()))
+            .ReturnsAsync(extractResult);
+
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        var input = ValidInput() with
+        {
+            Output = new OutputConfig("bucket-out", ManifestPrefix: "manifests/", FramesBucket: "bucket-out", FramesPrefix: null)
+        };
+
+        var result = await sut.ExecuteAsync(input);
+
+        result.Status.Should().Be(ProcessingStatus.SUCCEEDED);
+        storageMock.Verify(
+            x => x.UploadFramesAsync("bucket-out", "manifests/", It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenFramesBucketNullButManifestBucketSet_UsesManifestBucketForFrames()
+    {
+        // Cobre o branch: output.FramesBucket ?? output.ManifestBucket onde FramesBucket=null e ManifestBucket tem valor
+        var framePaths = new List<string> { "/tmp/f1.jpg" };
+        var extractResult = new FrameExtractionResult(1, framePaths, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1));
+
+        var storageMock = new Mock<IS3VideoStorage>();
+        storageMock
+            .Setup(x => x.DownloadToTempAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string _, string _, string path, CancellationToken _) => path);
+        storageMock
+            .Setup(x => x.UploadFramesAsync("manifest-bucket", "frames/", It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(["frames/f1.jpg"]);
+
+        var extractorMock = new Mock<IVideoFrameExtractor>();
+        extractorMock
+            .Setup(x => x.ExtractFramesAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>()))
+            .ReturnsAsync(extractResult);
+
+        var sut = new ProcessChunkUseCase(extractorMock.Object, storageMock.Object);
+        var input = ValidInput() with
+        {
+            Output = new OutputConfig("manifest-bucket", ManifestPrefix: "manifests/", FramesBucket: null, FramesPrefix: "frames/")
+        };
+
+        var result = await sut.ExecuteAsync(input);
+
+        result.Status.Should().Be(ProcessingStatus.SUCCEEDED);
+        storageMock.Verify(
+            x => x.UploadFramesAsync("manifest-bucket", "frames/", It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
 }
