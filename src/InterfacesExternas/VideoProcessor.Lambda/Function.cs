@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.S3;
@@ -20,6 +21,7 @@ public class Function
     private readonly ProcessChunkUseCase _useCase;
     private static bool _ffmpegEnsured;
 
+    [ExcludeFromCodeCoverage(Justification = "Wiring de DI e bootstrap da Lambda; testado via construtor interno em testes unitários.")]
     public Function()
     {
         TrySetFfmpegPathFromEnvOrKnownPaths();

@@ -155,6 +155,26 @@ public class S3VideoStorageTests
     }
 
     [Fact]
+    public async Task DownloadToTempAsync_WhenPathHasNoDirectory_SkipsCreateDirectoryAndPropagatesS3Error()
+    {
+        // Arrange — "video.mp4" sem componente de diretório → Path.GetDirectoryName retorna ""
+        // → string.IsNullOrEmpty("") == true → Directory.CreateDirectory NÃO é chamado (branch false coberto)
+        var s3Mock = new Mock<IAmazonS3>();
+        s3Mock
+            .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("Not Found") { StatusCode = System.Net.HttpStatusCode.NotFound });
+
+        var sut = new S3VideoStorage(s3Mock.Object);
+
+        // Act
+        var act = () => sut.DownloadToTempAsync("bucket", "key", "video.mp4");
+
+        // Assert
+        await act.Should().ThrowAsync<FileNotFoundException>()
+            .WithMessage("*não encontrado*");
+    }
+
+    [Fact]
     public async Task DownloadToTempAsync_WhenS3ReturnsForbidden_PropagatesOriginalAmazonS3Exception()
     {
         // Cobre o caminho onde AmazonS3Exception com status != 404 não é capturada pelo filtro when

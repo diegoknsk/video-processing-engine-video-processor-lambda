@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using VideoProcessor.Domain.Models;
 using VideoProcessor.Domain.Ports;
 using VideoProcessor.Domain.Services;
@@ -101,15 +102,21 @@ public class ProcessChunkUseCase(
         }
         finally
         {
-            try
-            {
-                if (Directory.Exists(baseTempDir))
-                    Directory.Delete(baseTempDir, recursive: true);
-            }
-            catch
-            {
-                // Best effort cleanup; ignore
-            }
+            TryDeleteTempDir(baseTempDir);
+        }
+    }
+
+    [ExcludeFromCodeCoverage(Justification = "Best-effort cleanup: Directory.Delete pode falhar por bloqueio de arquivo; não é testável de forma determinística.")]
+    private static void TryDeleteTempDir(string baseTempDir)
+    {
+        try
+        {
+            if (Directory.Exists(baseTempDir))
+                Directory.Delete(baseTempDir, recursive: true);
+        }
+        catch
+        {
+            // Ignore
         }
     }
 }
